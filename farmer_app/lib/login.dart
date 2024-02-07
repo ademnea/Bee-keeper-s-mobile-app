@@ -1,3 +1,4 @@
+import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
 
 class login extends StatefulWidget {
@@ -30,41 +31,137 @@ class _loginState extends State<login> {
                     child: Center(
                       child: Image.asset(
                         'lib/images/log-1.png',
+                        height: 200,
+                        width: 200,
                       ),
                     ),
                   ),
                   Container(
-                    height: 40,
+                    height: 25,
                   ),
 
-                  //button starts here.
+                  TextField(
+                    //controller: _acctController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      fillColor: Colors.brown.shade100, // Background color
+                      filled:
+                          true, // Set to true to fill the background with the specified color
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide:
+                            BorderSide.none, // No border for the outline
+                      ),
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.only(
+                            left: 16), // Add left padding to the prefix icon
+                        child: Icon(Icons.person), // Placeholder icon
+                      ),
+                    ),
+                    style: const TextStyle(
+                      height: 1.5,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20, // Increase the height of the text field
+                    ),
+                  ),
+                  Container(
+                    height: 20,
+                  ),
+
+                  TextField(
+                    //controller: _acctController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      fillColor: Colors.brown.shade100, // Background color
+                      filled:
+                          true, // Set to true to fill the background with the specified color
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide:
+                            BorderSide.none, // No border for the outline
+                      ),
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.only(
+                            left: 16), // Add left padding to the prefix icon
+                        child: Icon(Icons.lock), // Placeholder icon
+                      ),
+                    ),
+                    style: const TextStyle(
+                      height: 1.5,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20, // Increase the height of the text field
+                    ),
+                  ),
+                  Container(
+                    height: 20,
+                  ),
+
                   SizedBox(
-                    width: 200, // Replace with your desired width
-                    height: 50,
+                    width: 200, // Specify the desired width here
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add your button onPressed logic here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Splashscreen(),
+                          ),
+                        );
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromRGBO(61, 33, 13, 1),
+                          const Color.fromARGB(255, 206, 109, 40), // RGB color
                         ),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                30.0), // Adjust the radius as needed
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
                       ),
-                      child: const Text(
-                        'GET STARTED',
-                        style: TextStyle(
-                          fontSize: 20,
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 12.0,
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
-                  )
+                  ),
+
+                  Container(
+                    height: 20,
+                  ),
+                  //bottom navigation.
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Have no account?"),
+                        const SizedBox(
+                            width: 1), // Add some space between the texts
+                        TextButton(
+                          onPressed: () {
+                            // Handle sign-in button press
+                          },
+                          child: const Text(
+                            "contact support team to register",
+                            style: TextStyle(
+                              color: Colors
+                                  .black, // Change color to blue for a link-like appearance
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  //closes the column
                 ],
               ),
             ),

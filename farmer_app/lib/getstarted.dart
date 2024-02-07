@@ -1,3 +1,4 @@
+import 'package:farmer_app/login.dart';
 import 'package:farmer_app/register.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -108,12 +109,12 @@ class _GetStartedState extends State<GetStarted> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => register()),
+                        MaterialPageRoute(builder: (context) => login()),
                       );
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color.fromRGBO(61, 33, 13, 1), // RGB color
+                        const Color.fromARGB(255, 206, 109, 40), // RGB color
                       ),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
