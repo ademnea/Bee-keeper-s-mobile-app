@@ -1,3 +1,4 @@
+import 'package:farmer_app/home.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -103,7 +104,7 @@ class _loginState extends State<login> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Splashscreen(),
+                            builder: (context) => const Home(),
                           ),
                         );
                       },
