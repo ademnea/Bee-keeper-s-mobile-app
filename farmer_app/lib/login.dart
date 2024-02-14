@@ -1,4 +1,5 @@
 import 'package:farmer_app/home.dart';
+import 'package:farmer_app/navbar.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -94,9 +95,34 @@ class _loginState extends State<login> {
                     ),
                   ),
                   Container(
-                    height: 20,
+                    height: 10,
                   ),
 
+                  Row(
+                    children: [
+                      Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Splashscreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 206, 109, 40),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  Container(
+                    height: 10,
+                  ),
                   SizedBox(
                     width: 200, // Specify the desired width here
                     child: ElevatedButton(
@@ -104,7 +130,7 @@ class _loginState extends State<login> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Home(),
+                            builder: (context) => const navbar(),
                           ),
                         );
                       },

@@ -1,15 +1,14 @@
 import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
-import 'package:farmer_app/navbar.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class Hives extends StatefulWidget {
+  const Hives({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Hives> createState() => _HivesState();
 }
 
-class _HomeState extends State<Home> {
+class _HivesState extends State<Hives> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,12 +82,12 @@ class _HomeState extends State<Home> {
                                     child: const Row(
                                       children: [
                                         Icon(
-                                          Icons.house,
+                                          Icons.calendar_month,
                                           color:
                                               Color.fromARGB(255, 63, 59, 59),
                                         ),
                                         Text(
-                                          'Farms: 4',
+                                          'Harvest Dates',
                                           style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold),
@@ -104,24 +103,27 @@ class _HomeState extends State<Home> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white, // Grey color
+                                      color: const Color.fromARGB(
+                                          255, 236, 131, 44), // Grey color
                                       borderRadius: BorderRadius.circular(
                                           20), // Pill-like shape
                                     ),
-                                    child: const Row(
-                                      children: [
-                                        Icon(
-                                          Icons.house,
-                                          color:
-                                              Color.fromARGB(255, 63, 59, 59),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Splashscreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text(
+                                        'add Hive',
+                                        style: TextStyle(
+                                          color: Colors.white,
                                         ),
-                                        Text(
-                                          'Hives: 24',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 )
@@ -130,6 +132,28 @@ class _HomeState extends State<Home> {
                           ),
                         ],
                       )),
+
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10.0),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.polyline,
+                            color: Color.fromARGB(255, 63, 59, 59),
+                          ),
+                          Text(
+                            'Mubende Apiary',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
                   //first card
                   Center(
@@ -144,27 +168,9 @@ class _HomeState extends State<Home> {
                             .brown[300], // Set the background color to gray
                         child: Column(
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 80,
-                                  ),
-                                  Icon(
-                                    Icons.polyline,
-                                    color: Color.fromARGB(255, 63, 59, 59),
-                                  ),
-                                  Text(
-                                    'Recent Harvests',
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                            const SizedBox(
+                              height: 10,
                             ),
-
                             //table
                             Table(
                               children: [
@@ -175,7 +181,7 @@ class _HomeState extends State<Home> {
                                         padding: EdgeInsets.all(8.0),
                                         child: Center(
                                           child: Text(
-                                            'Mubende farm',
+                                            'Hive: 2 North',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -192,10 +198,15 @@ class _HomeState extends State<Home> {
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(20),
-                                              color: Colors.grey[
-                                                  300], // Background color
+                                              // color: Colors.grey[
+                                              //  300], // Background color
                                             ),
-                                            child: const Text('Hives: 3'),
+                                            child: Text(
+                                              'Healthy',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.orange[700]),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -206,16 +217,13 @@ class _HomeState extends State<Home> {
                                         child: Center(
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors
-                                                  .brown, // Background color
-                                            ),
+                                                // horizontal: 12,
+                                                vertical: 4),
                                             child: const Text(
-                                              '12kg',
+                                              'More details',
                                               style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.underline,
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
                                             ),
@@ -227,114 +235,85 @@ class _HomeState extends State<Home> {
                                 ),
                                 TableRow(
                                   children: [
+                                    TableCell(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                              color: Colors.orange[700],
+                                            ),
+                                            const Text(
+                                              'Mubende',
+                                              style: TextStyle(
+                                                //fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                     const TableCell(
                                       child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Mityana farm',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
+                                        padding: EdgeInsets.all(0.0),
                                       ),
                                     ),
-                                    TableCell(
+                                    const TableCell(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors.grey[
-                                                  300], // Background color
-                                            ),
-                                            child: const Text('Hives: 5'),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors
-                                                  .brown, // Background color
-                                            ),
-                                            child: const Text(
-                                              '15kg',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
+                                        padding: EdgeInsets.all(0.0),
                                       ),
                                     ),
                                   ],
                                 ),
                                 TableRow(
                                   children: [
+                                    TableCell(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.developer_board_outlined,
+                                              color: Colors.orange[700],
+                                            ),
+                                            const Text(
+                                              'Device:',
+                                              style: TextStyle(
+                                                //fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 4),
+                                            child: Text(
+                                              'Connected',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.green[700]),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     const TableCell(
                                       child: Padding(
                                         padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Hoima farm',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors.grey[
-                                                  300], // Background color
-                                            ),
-                                            child: const Text('Hives: 7'),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors
-                                                  .brown, // Background color
-                                            ),
-                                            child: const Text(
-                                              '22kg',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
                                       ),
                                     ),
                                   ],
@@ -342,20 +321,41 @@ class _HomeState extends State<Home> {
                               ],
                             ),
 
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Splashscreen(),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 22),
+                              child: Row(
+                                // mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.hexagon,
+                                    color: Colors.orange[700],
                                   ),
-                                );
-                              },
-                              child: const Text(
-                                'See all',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
+                                  const Text(
+                                    'Recent Harvests',
+                                    style: TextStyle(
+                                      //fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    '12/04/24  |  12kg',
+                                    style: TextStyle(
+                                      //fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const Padding(
+                              padding:
+                                  EdgeInsets.only(left: 22, bottom: 22, top: 8),
+                              child: Text(
+                                'No Pests Detected',
                               ),
                             ),
                           ],
