@@ -53,6 +53,15 @@ class _HivesState extends State<Hives> {
                                     width: 80,
                                   ),
                                 ),
+                                const SizedBox(
+                                  width: 100,
+                                ),
+                                const Text(
+                                  'Hives',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
                                 const Spacer(),
                                 const Icon(
                                   Icons.person,
@@ -71,30 +80,6 @@ class _HivesState extends State<Hives> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 20.0),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white, // Grey color
-                                      borderRadius: BorderRadius.circular(
-                                          20), // Pill-like shape
-                                    ),
-                                    child: const Row(
-                                      children: [
-                                        Icon(
-                                          Icons.calendar_month,
-                                          color:
-                                              Color.fromARGB(255, 63, 59, 59),
-                                        ),
-                                        Text(
-                                          'Harvest Dates',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ),
                                 const Spacer(),
                                 Padding(
@@ -132,28 +117,6 @@ class _HivesState extends State<Hives> {
                           ),
                         ],
                       )),
-
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.0),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.polyline,
-                            color: Color.fromARGB(255, 63, 59, 59),
-                          ),
-                          Text(
-                            'Mubende Apiary',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
 
                   //first card
                   Center(
@@ -353,9 +316,9 @@ class _HivesState extends State<Hives> {
 
                             const Padding(
                               padding:
-                                  EdgeInsets.only(left: 22, bottom: 22, top: 8),
+                                  EdgeInsets.only(left: 0, bottom: 22, top: 8),
                               child: Text(
-                                'No Pests Detected',
+                                'check monitor',
                               ),
                             ),
                           ],

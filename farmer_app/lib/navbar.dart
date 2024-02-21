@@ -1,7 +1,8 @@
 import 'package:farmer_app/getstarted.dart';
 import 'package:farmer_app/hives.dart';
-import 'package:farmer_app/login.dart';
-import 'package:farmer_app/register.dart';
+import 'package:farmer_app/hivedetails.dart';
+import 'package:farmer_app/apiaries.dart';
+import 'package:farmer_app/records.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -26,11 +27,12 @@ class navbar extends StatefulWidget {
 class _navbarState extends State<navbar> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    Hives(),
-    register(),
-    GetStarted()
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Home(),
+    const Hives(),
+    const HiveDetails(),
+    const Records(),
+    //MyScreen(), //to use in debugging the toggler.
   ];
 
   @override
@@ -80,15 +82,15 @@ class _navbarState extends State<navbar> {
                 ),
                 GButton(
                   icon: LineIcons.archive,
-                  text: 'Hives',
+                  text: 'Apiaries',
                 ),
                 GButton(
-                  icon: LineIcons.shoppingBag,
-                  text: 'Shop',
+                  icon: LineIcons.lineChart,
+                  text: 'Monitor',
                 ),
                 GButton(
-                  icon: LineIcons.users,
-                  text: 'Community',
+                  icon: LineIcons.folder,
+                  text: 'Records',
                 ),
               ],
               selectedIndex: _selectedIndex,
