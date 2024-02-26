@@ -1,4 +1,5 @@
 import 'package:farmer_app/splashscreen.dart';
+import 'package:farmer_app/components/graphs.dart';
 import 'package:flutter/material.dart';
 
 class Hives extends StatefulWidget {
@@ -78,8 +79,8 @@ class _HivesState extends State<Hives> {
                             padding: const EdgeInsets.only(top: 150.0),
                             child: Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20.0),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 20.0),
                                 ),
                                 const Spacer(),
                                 Padding(
@@ -331,6 +332,16 @@ class _HivesState extends State<Hives> {
                     height: 20,
                   ),
                   // Add other cards here
+                  Container(
+                    child: const SizedBox(
+                      width: 300, // Adjust width as needed
+                      height: 400, // Adjust height as needed
+                      child: Graphs(),
+                    ),
+                  ),
+                  Container(
+                    height: 20,
+                  ),
                 ],
               ),
             ),

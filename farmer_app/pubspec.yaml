@@ -48,6 +48,11 @@ dev_dependencies:
   line_icons: ^2.0.0
   carousel_slider: ^4.0.0
   table_calendar: ^3.0.0
+  fl_chart: ^0.66.2
+  
+
+
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

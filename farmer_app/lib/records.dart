@@ -1,4 +1,4 @@
-import 'package:farmer_app/imageslider.dart';
+import 'package:farmer_app/components/imageslider.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:farmer_app/components/notificationbar.dart';
 import 'package:table_calendar/table_calendar.dart';
