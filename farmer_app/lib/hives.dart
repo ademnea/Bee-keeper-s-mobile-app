@@ -332,13 +332,7 @@ class _HivesState extends State<Hives> {
                     height: 20,
                   ),
                   // Add other cards here
-                  Container(
-                    child: const SizedBox(
-                      width: 300, // Adjust width as needed
-                      height: 400, // Adjust height as needed
-                      child: Graphs(),
-                    ),
-                  ),
+
                   Container(
                     height: 20,
                   ),

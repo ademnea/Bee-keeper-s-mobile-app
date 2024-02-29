@@ -344,12 +344,12 @@ class _HomeState extends State<Home> {
 
                             TextButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Splashscreen(),
-                                  ),
-                                );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => const Splashscreen(),
+                                //   ),
+                                // );
                               },
                               child: const Text(
                                 'See all',

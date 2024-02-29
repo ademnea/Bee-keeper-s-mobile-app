@@ -1,4 +1,5 @@
 import 'package:farmer_app/components/imageslider.dart';
+import 'package:farmer_app/temperature.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:farmer_app/components/notificationbar.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -129,7 +130,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const Splashscreen(),
+                                            const Temperature(),
                                       ),
                                     );
                                   },
