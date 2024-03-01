@@ -1,4 +1,5 @@
 import 'package:farmer_app/components/imageslider.dart';
+import 'package:farmer_app/parameter_tab_view.dart';
 import 'package:farmer_app/temperature.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:farmer_app/components/notificationbar.dart';
@@ -129,8 +130,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Temperature(),
+                                        builder: (context) => const TabView(),
                                       ),
                                     );
                                   },

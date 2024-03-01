@@ -1,3 +1,4 @@
+import 'package:farmer_app/parameter_tab_view.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:farmer_app/navbar.dart';
@@ -344,12 +345,12 @@ class _HomeState extends State<Home> {
 
                             TextButton(
                               onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => const Splashscreen(),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const TabView(),
+                                  ),
+                                );
                               },
                               child: const Text(
                                 'See all',

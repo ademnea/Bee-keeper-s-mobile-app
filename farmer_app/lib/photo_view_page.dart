@@ -18,7 +18,7 @@ class PhotoViewPage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color.fromARGB(255, 240, 166, 81),
         elevation: 0,
       ),
       body: PhotoViewGallery.builder(
