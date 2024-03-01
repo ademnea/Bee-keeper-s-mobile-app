@@ -1,3 +1,4 @@
+import 'package:farmer_app/hivedetails.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:farmer_app/components/graphs.dart';
 import 'package:flutter/material.dart';
@@ -48,10 +49,15 @@ class _HivesState extends State<Hives> {
                             child: Row(
                               children: [
                                 Container(
-                                  child: Image.asset(
-                                    'lib/images/log-1.png',
-                                    height: 80,
-                                    width: 80,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    icon: const Icon(
+                                      Icons.chevron_left_rounded,
+                                      color: Color.fromARGB(255, 206, 109, 40),
+                                      size: 65,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(
@@ -86,14 +92,6 @@ class _HivesState extends State<Hives> {
                                 Padding(
                                   padding: const EdgeInsets.only(right: 20.0),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 236, 131, 44), // Grey color
-                                      borderRadius: BorderRadius.circular(
-                                          20), // Pill-like shape
-                                    ),
                                     child: TextButton(
                                       onPressed: () {
                                         Navigator.push(
@@ -104,10 +102,28 @@ class _HivesState extends State<Hives> {
                                           ),
                                         );
                                       },
-                                      child: const Text(
-                                        'add Hive',
-                                        style: TextStyle(
-                                          color: Colors.white,
+                                      style: ButtonStyle(
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                30), // Increase the border radius for more roundness
+                                          ),
+                                        ),
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                          Colors.orange.withOpacity(0.8),
+                                        ), // Set the background color
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 4), // Adjust padding here
+                                        child: Text(
+                                          'Add Hive',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -177,23 +193,23 @@ class _HivesState extends State<Hives> {
                                     ),
                                     TableCell(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                // horizontal: 12,
-                                                vertical: 4),
-                                            child: const Text(
-                                              'More details',
-                                              style: TextStyle(
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const HiveDetails(),
+                                                  ),
+                                                );
+                                              },
+                                              child: const Text(
+                                                'More Details',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ))),
                                     ),
                                   ],
                                 ),

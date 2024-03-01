@@ -1,3 +1,4 @@
+import 'package:farmer_app/Notifications.dart';
 import 'package:farmer_app/getstarted.dart';
 import 'package:farmer_app/hives.dart';
 import 'package:farmer_app/hivedetails.dart';
@@ -29,8 +30,8 @@ class _navbarState extends State<navbar> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const Home(),
-    const Hives(),
-    const HiveDetails(),
+    const Apiaries(),
+    const Notifications(),
     const Records(),
     //MyScreen(), //to use in debugging the toggler.
   ];
@@ -38,14 +39,6 @@ class _navbarState extends State<navbar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('MillionDollarBaby'),
-      //   backgroundColor: Colors.green[800], // Set the background color
-      // ),
-
-      //the code below displays content for each page.
-      // navigation bar is supposed to display here for all the pages,
-
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -85,8 +78,8 @@ class _navbarState extends State<navbar> {
                   text: 'Apiaries',
                 ),
                 GButton(
-                  icon: LineIcons.lineChart,
-                  text: 'Monitor',
+                  icon: LineIcons.bell,
+                  text: 'Notifications',
                 ),
                 GButton(
                   icon: LineIcons.folder,

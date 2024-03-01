@@ -52,10 +52,15 @@ class _HiveDetailsState extends State<HiveDetails> {
                             child: Row(
                               children: [
                                 Container(
-                                  child: const Icon(
-                                    Icons.chevron_left_rounded,
-                                    color: Color.fromARGB(255, 206, 109, 40),
-                                    size: 65,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    icon: const Icon(
+                                      Icons.chevron_left_rounded,
+                                      color: Color.fromARGB(255, 206, 109, 40),
+                                      size: 65,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(

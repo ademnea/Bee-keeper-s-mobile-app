@@ -344,14 +344,7 @@ class _HomeState extends State<Home> {
                             ),
 
                             TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const TabView(),
-                                  ),
-                                );
-                              },
+                              onPressed: () {},
                               child: const Text(
                                 'See all',
                                 style: TextStyle(
