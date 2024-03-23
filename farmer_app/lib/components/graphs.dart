@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class Graphs extends StatefulWidget {
-  const Graphs({super.key});
+  final List<DateTime> xValues;
+  final List<double> yValues;
+  final String xAxisLabel;
+  final String yAxisLabel;
+
+  const Graphs({
+    Key? key,
+    required this.xValues,
+    required this.yValues,
+    required this.xAxisLabel,
+    required this.yAxisLabel,
+  }) : super(key: key);
 
   @override
   State<Graphs> createState() => _GraphsState();
@@ -11,12 +22,25 @@ class Graphs extends StatefulWidget {
 class _GraphsState extends State<Graphs> {
   @override
   Widget build(BuildContext context) {
+    if (widget.xValues.isEmpty || widget.yValues.isEmpty) {
+      return const Center(
+        child: Text('No data available.'),
+      );
+    }
     return LineChart(
       LineChartData(
-        minX: 0,
-        maxX: 6,
-        minY: 0,
-        maxY: 6,
+        minX: widget.xValues
+            .map<double>(
+                (dateTime) => dateTime.millisecondsSinceEpoch.toDouble())
+            .reduce((value, element) => value < element ? value : element),
+        maxX: widget.xValues
+            .map<double>(
+                (dateTime) => dateTime.millisecondsSinceEpoch.toDouble())
+            .reduce((value, element) => value > element ? value : element),
+        minY: widget.yValues
+            .reduce((value, element) => value < element ? value : element),
+        maxY: widget.yValues
+            .reduce((value, element) => value > element ? value : element),
         gridData: FlGridData(
           show: true,
           getDrawingHorizontalLine: (value) {
@@ -28,14 +52,12 @@ class _GraphsState extends State<Graphs> {
         ),
         lineBarsData: [
           LineChartBarData(
-            spots: [
-              const FlSpot(0, 0),
-              const FlSpot(1, 3),
-              const FlSpot(2, 2),
-              const FlSpot(3, 4),
-              const FlSpot(4, 3),
-              const FlSpot(5, 5),
-            ],
+            spots: List.generate(
+              widget.xValues.length,
+              (index) => FlSpot(
+                  widget.xValues[index].millisecondsSinceEpoch.toDouble(),
+                  widget.yValues[index]),
+            ),
             isCurved: true,
             color: Colors.white,
             barWidth: 1,
@@ -46,18 +68,24 @@ class _GraphsState extends State<Graphs> {
             dotData: const FlDotData(show: true),
           ),
         ],
-        titlesData: const FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          leftTitles: AxisTitles(
-            axisNameWidget: Text('Temperature (F)'),
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          bottomTitles: AxisTitles(
-            axisNameWidget: Text('Date'),
-            sideTitles: SideTitles(showTitles: true),
-          ),
-        ),
+        titlesData: FlTitlesData(
+            // bottomTitles: SideTitles(
+            //   showTitles: true,
+            //   getTitles: (value) => value.toInt().toString(),
+            //   margin: 8,
+            //   interval: 1,
+            //   reservedSize: 20,
+            //   getTextStyles: (context, value) => const TextStyle(color: Colors.black, fontSize: 10),
+            // ),
+            // leftTitles: SideTitles(
+            //   showTitles: true,
+            //   getTitles: (value) => value.toInt().toString(),
+            //   margin: 8,
+            //   interval: 1,
+            //   reservedSize: 20,
+            //   getTextStyles: (context, value) => const TextStyle(color: Colors.black, fontSize: 10),
+            // ),
+            ),
       ),
     );
   }

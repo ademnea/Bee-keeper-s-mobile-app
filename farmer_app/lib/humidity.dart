@@ -58,7 +58,12 @@ class _HumidityState extends State<Humidity> {
                   child: const SizedBox(
                     width: double.infinity, // Adjust width as needed
                     height: 550, // Adjust height as needed
-                    child: Graphs(),
+                    // child: Graphs(
+                    //   xValues: [0, 1, 2, 3, 4, 5],
+                    //   yValues: [0, 3, 2, 4, 3, 5],
+                    //   xAxisLabel: 'Date',
+                    //   yAxisLabel: 'Temperature (F)',
+                    // ),
                   ),
                 ),
               ],
