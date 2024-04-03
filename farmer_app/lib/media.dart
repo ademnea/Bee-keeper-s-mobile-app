@@ -1,26 +1,46 @@
-import 'package:farmer_app/humidity.dart';
-import 'package:farmer_app/photo_view_page.dart';
-import 'package:farmer_app/temperature.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:farmer_app/photo_view_page.dart';
 
 class Media extends StatefulWidget {
-  const Media({super.key});
+  const Media({Key? key}) : super(key: key);
 
   @override
   State<Media> createState() => _MediaState();
 }
 
 class _MediaState extends State<Media> {
-  final List<String> photos = [
-    'https://m.media-amazon.com/images/I/71IeYNcBYdL._SX679_.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg',
-    'https://hairstyleonpoint.com/wp-content/uploads/2015/09/4ce06e936dcd5e5c5c3e44be9edbc8ff.jpg',
-    'https://bsmedia.business-standard.com/_media/bs/img/article/2020-12/11/full/1607656152-0479.jpg',
-    'https://cdn.pixabay.com/photo/2015/04/19/08/32/marguerite-729510__340.jpg',
-  ];
+  List<String> photos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPhotos();
+  }
+
+  Future<void> fetchPhotos() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://www.ademnea.net/api/v1/hives/1/images/2023-12-12/2024-12-12'));
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        List<dynamic> imagePaths = jsonData['imagePaths'];
+
+        setState(() {
+          photos = imagePaths
+              .map<String>((path) =>
+                  'https://www.ademnea.net/${path.replaceFirst("public/", "")}')
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load photos');
+      }
+    } catch (error) {
+      print('Error fetching photos: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

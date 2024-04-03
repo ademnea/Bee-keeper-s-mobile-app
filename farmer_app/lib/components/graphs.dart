@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 class Graphs extends StatefulWidget {
   final List<DateTime> xValues;
-  final List<double> yValues;
+  final List<double?> yValues;
   final String xAxisLabel;
   final String yAxisLabel;
 
@@ -24,7 +24,7 @@ class _GraphsState extends State<Graphs> {
   Widget build(BuildContext context) {
     if (widget.xValues.isEmpty || widget.yValues.isEmpty) {
       return const Center(
-        child: Text('No data available.'),
+        child: Text('Oops! No data available.'),
       );
     }
     return LineChart(
@@ -38,8 +38,12 @@ class _GraphsState extends State<Graphs> {
                 (dateTime) => dateTime.millisecondsSinceEpoch.toDouble())
             .reduce((value, element) => value > element ? value : element),
         minY: widget.yValues
+            .where((value) => value != null)
+            .map<double>((value) => value!)
             .reduce((value, element) => value < element ? value : element),
         maxY: widget.yValues
+            .where((value) => value != null)
+            .map<double>((value) => value!)
             .reduce((value, element) => value > element ? value : element),
         gridData: FlGridData(
           show: true,
@@ -56,7 +60,7 @@ class _GraphsState extends State<Graphs> {
               widget.xValues.length,
               (index) => FlSpot(
                   widget.xValues[index].millisecondsSinceEpoch.toDouble(),
-                  widget.yValues[index]),
+                  widget.yValues[index] ?? 0.0), // Use 0.0 if value is null
             ),
             isCurved: true,
             color: Colors.white,
@@ -68,24 +72,7 @@ class _GraphsState extends State<Graphs> {
             dotData: const FlDotData(show: true),
           ),
         ],
-        titlesData: FlTitlesData(
-            // bottomTitles: SideTitles(
-            //   showTitles: true,
-            //   getTitles: (value) => value.toInt().toString(),
-            //   margin: 8,
-            //   interval: 1,
-            //   reservedSize: 20,
-            //   getTextStyles: (context, value) => const TextStyle(color: Colors.black, fontSize: 10),
-            // ),
-            // leftTitles: SideTitles(
-            //   showTitles: true,
-            //   getTitles: (value) => value.toInt().toString(),
-            //   margin: 8,
-            //   interval: 1,
-            //   reservedSize: 20,
-            //   getTextStyles: (context, value) => const TextStyle(color: Colors.black, fontSize: 10),
-            // ),
-            ),
+        titlesData: FlTitlesData(),
       ),
     );
   }
