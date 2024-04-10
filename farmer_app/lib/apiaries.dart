@@ -21,7 +21,7 @@ class _ApiariesState extends State<Apiaries> {
               child: Column(
                 children: [
                   SizedBox(
-                      height: 200,
+                      height: 150,
                       width: 2000,
                       child: Stack(
                         children: [
@@ -72,58 +72,7 @@ class _ApiariesState extends State<Apiaries> {
                               ],
                             ),
                           ),
-
                           //second row.
-
-                          Padding(
-                            padding: const EdgeInsets.only(top: 150.0),
-                            child: Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 20.0),
-                                ),
-                                const Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 20.0),
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const Splashscreen(),
-                                        ),
-                                      );
-                                    },
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              30), // Increase the border radius for more roundness
-                                        ),
-                                      ),
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                        Colors.orange.withOpacity(0.8),
-                                      ), // Set the background color
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 4), // Adjust padding here
-                                      child: Text(
-                                        'Add Apiary',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
                         ],
                       )),
 
