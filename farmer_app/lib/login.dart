@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:farmer_app/home.dart';
 import 'package:farmer_app/navbar.dart';
 import 'package:farmer_app/splashscreen.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class login extends StatefulWidget {
@@ -12,6 +15,43 @@ class login extends StatefulWidget {
 
 final TextEditingController usernamecontroller = TextEditingController();
 final TextEditingController passwordcontroller = TextEditingController();
+
+Future Logmein(BuildContext context) async {
+  var url = "http://ademnea.net/API/";
+  var response = await http.post(Uri.parse(url), body: {
+    "username": usernamecontroller.text,
+    "password": passwordcontroller.text,
+  });
+
+  var data = jsonDecode(response.body);
+  if (data == "success") {
+    // Fluttertoast.showToast(
+    //     msg: "Login Successful",
+    //     toastLength: Toast.LENGTH_SHORT,
+    //     gravity: ToastGravity.CENTER,
+    //     timeInSecForIosWeb: 1,
+    //     backgroundColor: Colors.green,
+    //     textColor: Colors.white,
+    //     fontSize: 16.0);
+
+    //now log the farmer in
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const navbar(),
+      ),
+    );
+  } else {
+    // Fluttertoast.showToast(
+    //     msg: "Wrong Credentials!",
+    //     toastLength: Toast.LENGTH_SHORT,
+    //     gravity: ToastGravity.CENTER,
+    //     timeInSecForIosWeb: 1,
+    //     backgroundColor: Colors.red,
+    //     textColor: Colors.white,
+    //     fontSize: 16.0);
+  }
+}
 
 class _loginState extends State<login> {
   @override
@@ -127,12 +167,7 @@ class _loginState extends State<login> {
                     width: 200, // Specify the desired width here
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const navbar(),
-                          ),
-                        );
+                        Logmein(context);
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
