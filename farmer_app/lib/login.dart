@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:farmer_app/home.dart';
 import 'package:farmer_app/navbar.dart';
 import 'package:farmer_app/splashscreen.dart';
@@ -17,24 +17,32 @@ final TextEditingController usernamecontroller = TextEditingController();
 final TextEditingController passwordcontroller = TextEditingController();
 
 Future Logmein(BuildContext context) async {
-  var url = "http://ademnea.net/API/";
-  var response = await http.post(Uri.parse(url), body: {
-    "username": usernamecontroller.text,
-    "password": passwordcontroller.text,
-  });
+//login code from postman
 
-  var data = jsonDecode(response.body);
-  if (data == "success") {
-    // Fluttertoast.showToast(
-    //     msg: "Login Successful",
-    //     toastLength: Toast.LENGTH_SHORT,
-    //     gravity: ToastGravity.CENTER,
-    //     timeInSecForIosWeb: 1,
-    //     backgroundColor: Colors.green,
-    //     textColor: Colors.white,
-    //     fontSize: 16.0);
+  var headers = {'Accept': 'application/json'};
+  var request = http.MultipartRequest(
+      'POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
+  request.fields.addAll(
+      {'email': usernamecontroller.text, 'password': passwordcontroller.text});
 
-    //now log the farmer in
+  request.headers.addAll(headers);
+
+  http.StreamedResponse response = await request.send();
+
+  if (response.statusCode == 200) {
+    //print success message
+    print(await response.stream.bytesToString());
+
+    Fluttertoast.showToast(
+        msg: "Successful!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0);
+
+    //Log the farmer in.
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -42,14 +50,17 @@ Future Logmein(BuildContext context) async {
       ),
     );
   } else {
-    // Fluttertoast.showToast(
-    //     msg: "Wrong Credentials!",
-    //     toastLength: Toast.LENGTH_SHORT,
-    //     gravity: ToastGravity.CENTER,
-    //     timeInSecForIosWeb: 1,
-    //     backgroundColor: Colors.red,
-    //     textColor: Colors.white,
-    //     fontSize: 16.0);
+    //print "unauthorized"
+    print("Wrong credentials!");
+
+    Fluttertoast.showToast(
+        msg: "Wrong Credentials!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }
 
@@ -83,9 +94,9 @@ class _loginState extends State<login> {
                   ),
 
                   TextField(
-                    //controller: _acctController,
+                    controller: usernamecontroller,
                     decoration: InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Email',
                       fillColor: Colors.brown.shade100, // Background color
                       filled:
                           true, // Set to true to fill the background with the specified color
@@ -111,7 +122,7 @@ class _loginState extends State<login> {
                   ),
 
                   TextField(
-                    //controller: _acctController,
+                    controller: passwordcontroller,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       fillColor: Colors.brown.shade100, // Background color

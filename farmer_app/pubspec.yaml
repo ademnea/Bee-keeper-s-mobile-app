@@ -42,7 +42,7 @@ dev_dependencies:
   animated_text_kit: ^4.2.1  # Add this line
   file_picker: ^6.0.0
   http: ^1.2.1
-  fluttertoast: ^8.2.5
+  fluttertoast: ^8.2.2
   intl: ^0.18.1
   google_nav_bar: ^5.0.6
   line_icons: ^2.0.0
