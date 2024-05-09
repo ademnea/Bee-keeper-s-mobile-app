@@ -1,15 +1,81 @@
+import 'dart:convert';
+
 import 'package:farmer_app/hives.dart';
-import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Apiaries extends StatefulWidget {
-  const Apiaries({super.key});
+  const Apiaries({Key? key}) : super(key: key);
 
   @override
   State<Apiaries> createState() => _ApiariesState();
 }
 
+class Farm {
+  final int id;
+  final int ownerId;
+  final String name;
+  final String district;
+  final String address;
+  final String createdAt;
+  final String updatedAt;
+
+  Farm({
+    required this.id,
+    required this.ownerId,
+    required this.name,
+    required this.district,
+    required this.address,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Farm.fromJson(Map<String, dynamic> json) {
+    return Farm(
+      id: json['id'],
+      ownerId: json['ownerId'],
+      name: json['name'],
+      district: json['district'],
+      address: json['address'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+    );
+  }
+}
+
 class _ApiariesState extends State<Apiaries> {
+  List<Farm> farms = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getApiaries();
+  }
+
+  Future<void> getApiaries() async {
+    try {
+      var headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer 7|5gtx0HM2FVwiLHeCT4iBACSS6oBFYNNCo3C72pKa'
+      };
+      var response = await http.get(
+        Uri.parse('https://www.ademnea.net/api/v1/farms/'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          farms = data.map((farm) => Farm.fromJson(farm)).toList();
+        });
+      } else {
+        print('Failed to load farms: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error fetching Apiary data: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,277 +87,68 @@ class _ApiariesState extends State<Apiaries> {
               child: Column(
                 children: [
                   SizedBox(
-                      height: 150,
-                      width: 2000,
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.orange.withOpacity(0.8),
-                                  Colors.orange.withOpacity(0.6),
-                                  Colors.orange.withOpacity(0.4),
-                                  Colors.orange.withOpacity(0.2),
-                                  Colors.orange.withOpacity(0.1),
-                                  Colors.transparent,
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          //image starts here
-                          Padding(
-                            padding: const EdgeInsets.only(top: 50.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: Image.asset(
-                                    'lib/images/log-1.png',
-                                    height: 80,
-                                    width: 80,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 100,
-                                ),
-                                const Text(
-                                  'Apiaries',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                                ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.person,
-                                  color: Color.fromARGB(255, 206, 109, 40),
-                                  size: 65,
-                                ),
+                    height: 150,
+                    width: 2000,
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.orange.withOpacity(0.8),
+                                Colors.orange.withOpacity(0.6),
+                                Colors.orange.withOpacity(0.4),
+                                Colors.orange.withOpacity(0.2),
+                                Colors.orange.withOpacity(0.1),
+                                Colors.transparent,
                               ],
                             ),
                           ),
-                          //second row.
-                        ],
-                      )),
-
-                  //first card
-                  Center(
-                    child: SizedBox(
-                      width: 350,
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
                         ),
-                        color: Colors
-                            .brown[300], // Set the background color to gray
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            //table
-                            Table(
-                              children: [
-                                TableRow(
-                                  children: [
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Hive: 2 North',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              // color: Colors.grey[
-                                              //  300], // Background color
-                                            ),
-                                            child: Text(
-                                              'Healthy',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.orange[700]),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const Hives(),
-                                                  ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'More Details',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ))),
-                                    ),
-                                  ],
+                        Padding(
+                          padding: const EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                child: Image.asset(
+                                  'lib/images/log-1.png',
+                                  height: 80,
+                                  width: 80,
                                 ),
-                                TableRow(
-                                  children: [
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                              color: Colors.orange[700],
-                                            ),
-                                            const Text(
-                                              'Mubende',
-                                              style: TextStyle(
-                                                //fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(0.0),
-                                      ),
-                                    ),
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(0.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.developer_board_outlined,
-                                              color: Colors.orange[700],
-                                            ),
-                                            const Text(
-                                              'Device:',
-                                              style: TextStyle(
-                                                //fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 5, vertical: 4),
-                                            child: const Text(
-                                              'Connected',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(left: 22),
-                              child: Row(
-                                // mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.hexagon,
-                                    color: Colors.orange[700],
-                                  ),
-                                  const Text(
-                                    'Recent Harvests',
-                                    style: TextStyle(
-                                      //fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Text(
-                                    '12/04/24  |  12kg',
-                                    style: TextStyle(
-                                      //fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
                               ),
-                            ),
-
-                            const Padding(
-                              padding:
-                                  EdgeInsets.only(left: 0, bottom: 22, top: 8),
-                              child: Text(
-                                'check monitor',
+                              const SizedBox(
+                                width: 100,
                               ),
-                            ),
-                          ],
+                              const Text(
+                                'Apiaries',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              const Spacer(),
+                              const Icon(
+                                Icons.person,
+                                color: Color.fromARGB(255, 206, 109, 40),
+                                size: 65,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-
-                  Container(
+                  const SizedBox(
                     height: 20,
                   ),
-                  // Add other cards here
-
-                  Container(
-                    height: 20,
+                  // ListView.builder to dynamically create cards
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: farms.length,
+                    itemBuilder: (context, index) {
+                      return buildFarmCard(farms[index]);
+                    },
                   ),
                 ],
               ),
@@ -299,7 +156,206 @@ class _ApiariesState extends State<Apiaries> {
           ),
         ),
       ),
-//bottom navigation bar.
+    );
+  }
+
+  Widget buildFarmCard(Farm farm) {
+    return Center(
+      child: SizedBox(
+        width: 350,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          color: Colors.brown[300],
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Table(
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text(
+                                "Apiary:",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                farm.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: TextButton(
+                            onPressed: () {
+                              // Navigate to hives page by sending the hive id
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Hives(farmId: farm.id),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'view hives',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                color: Colors.orange[700],
+                              ),
+                              Text(
+                                farm.address,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const TableCell(
+                        child: Padding(
+                          padding: EdgeInsets.all(0.0),
+                          child: SizedBox.shrink(),
+                        ),
+                      ),
+                      const TableCell(
+                        child: Padding(
+                          padding: EdgeInsets.all(0.0),
+                          child: SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.developer_board_outlined,
+                                color: Colors.orange[700],
+                              ),
+                              const Text(
+                                'Device:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 4),
+                              child: const Text(
+                                'Connected',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const TableCell(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 20),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.hexagon,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Recent Harvests',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      '12/04/24  |  12kg',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

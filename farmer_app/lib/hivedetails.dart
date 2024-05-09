@@ -1,13 +1,12 @@
 import 'package:farmer_app/components/imageslider.dart';
 import 'package:farmer_app/parameter_tab_view.dart';
-import 'package:farmer_app/temperature.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:farmer_app/components/notificationbar.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 
 class HiveDetails extends StatefulWidget {
-  const HiveDetails({super.key});
+  final int hiveId;
+  const HiveDetails({Key? key, required this.hiveId}) : super(key: key);
 
   @override
   State<HiveDetails> createState() => _HiveDetailsState();
@@ -66,9 +65,9 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 const SizedBox(
                                   width: 90,
                                 ),
-                                const Text(
-                                  'HiveName',
-                                  style: TextStyle(
+                                Text(
+                                  'Hive ${widget.hiveId}',
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
                                 ),
@@ -174,7 +173,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                     );
                                   },
                                   child: const Text(
-                                    'Harvesting time',
+                                    'Hive Notifications',
                                     style: TextStyle(
                                         color: Colors.white,
                                         // decoration: TextDecoration.underline,
@@ -182,41 +181,40 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   ),
                                 ),
                                 const Spacer(),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Splashscreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Feeding time',
-                                    style: TextStyle(
-                                        color: Colors.grey[200],
-                                        // decoration: TextDecoration.underline,
-                                        fontSize: 17),
-                                  ),
-                                ),
+                                // TextButton(
+                                //   onPressed: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             const Splashscreen(),
+                                //       ),
+                                //     );
+                                //   },
+                                //   child: Text(
+                                //     'Feeding time',
+                                //     style: TextStyle(
+                                //         color: Colors.grey[200],
+                                //         // decoration: TextDecoration.underline,
+                                //         fontSize: 17),
+                                //   ),
+                                // ),
                               ],
                             ),
 
-                            Container(
-                              child: TableCalendar(
-                                firstDay: DateTime.utc(2010, 10, 16),
-                                lastDay: DateTime.utc(2030, 3, 14),
-                                focusedDay: DateTime.now(),
-                              ),
-                            ),
-
-                            Divider(
-                              height: 1, // Set the height of the divider
-                              color: Colors
-                                  .grey[350], // Set the color of the divider
-                              thickness: 2, // Set the thickness of the divider
-                            ),
+                            // Container(
+                            //   child: TableCalendar(
+                            //     firstDay: DateTime.utc(2010, 10, 16),
+                            //     lastDay: DateTime.utc(2030, 3, 14),
+                            //     focusedDay: DateTime.now(),
+                            //   ),
+                            // ),
+                            // Divider(
+                            //   height: 1, // Set the height of the divider
+                            //   color: Colors
+                            //       .grey[350], // Set the color of the divider
+                            //   thickness: 2, // Set the thickness of the divider
+                            // ),
 
                             //notifications start here.
                             Container(

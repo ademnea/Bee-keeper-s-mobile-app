@@ -15,8 +15,6 @@ class Temperature extends StatefulWidget {
 class _TemperatureState extends State<Temperature> {
   List<DateTime> dates = [];
   List<double?> interiorTemperatures = []; // Nullable double
-  final url = Uri.parse(
-      'https://www.ademnea.net/api/v1/hives/1/temperature/2023-12-12/2024-12-12');
 
   @override
   void initState() {
@@ -26,33 +24,33 @@ class _TemperatureState extends State<Temperature> {
 
   Future<void> getTempData() async {
     try {
-      final response = await http.get(url);
+      var headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer 7|5gtx0HM2FVwiLHeCT4iBACSS6oBFYNNCo3C72pKa'
+      };
+      var request = http.Request(
+          'GET',
+          Uri.parse(
+              'https://www.ademnea.net/api/v1/hives/1/temperature/01-01-2024/12-06-2024'));
 
-      // print(response.body);
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        String responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> jsonData = jsonDecode(responseBody);
 
-        if (jsonData['dates'] != null &&
-            jsonData['interiorTemperatures'] != null) {
-          final List<String> dateStrings = List<String>.from(jsonData['dates']);
-          final List<dynamic> temperatureValues =
-              List<dynamic>.from(jsonData['interiorTemperatures']);
+        // Process data and assign to lists
+        dates = List<DateTime>.from(
+            jsonData['dates'].map((date) => DateTime.parse(date)));
+        interiorTemperatures = List<double?>.from(
+            jsonData['interiorTemperatures']
+                .map((value) => double.tryParse(value?.toString() ?? '')));
 
-          setState(() {
-            dates = dateStrings.map<DateTime>((dateString) {
-              return DateTime.parse(dateString);
-            }).toList();
-
-            interiorTemperatures = temperatureValues
-                .map<double?>((tempValue) => tempValue != null
-                    ? double.tryParse(tempValue.toString())
-                    : null)
-                .toList();
-          });
-        }
+        setState(() {}); // Trigger a rebuild with the new data
       } else {
-        print('Failed with status code: ${response.statusCode}');
+        print(response.reasonPhrase);
       }
     } catch (error) {
       print('Error fetching temperature data: $error');

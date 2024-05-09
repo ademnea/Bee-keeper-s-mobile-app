@@ -1,27 +1,92 @@
-import 'package:farmer_app/hivedetails.dart';
-import 'package:farmer_app/splashscreen.dart';
-import 'package:farmer_app/components/graphs.dart';
 import 'package:flutter/material.dart';
+import 'package:farmer_app/hivedetails.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Hives extends StatefulWidget {
-  const Hives({super.key});
+  final int farmId;
+
+  const Hives({Key? key, required this.farmId}) : super(key: key);
 
   @override
   State<Hives> createState() => _HivesState();
 }
 
+class Hive {
+  final int id;
+  final String longitude;
+  final String latitude;
+  final int farmId;
+  final String? createdAt;
+  final String? updatedAt;
+
+  Hive({
+    required this.id,
+    required this.longitude,
+    required this.latitude,
+    required this.farmId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Hive.fromJson(Map<String, dynamic> json) {
+    return Hive(
+      id: json['id'],
+      longitude: json['longitude'],
+      latitude: json['latitude'],
+      farmId: json['farm_id'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+    );
+  }
+}
+
 class _HivesState extends State<Hives> {
+  List<Hive> hives = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getHives(widget.farmId);
+  }
+
+  Future<void> getHives(int farmId) async {
+    try {
+      var headers = {
+        'Authorization': 'Bearer 7|5gtx0HM2FVwiLHeCT4iBACSS6oBFYNNCo3C72pKa'
+      };
+
+      var url = 'https://www.ademnea.net/api/v1/farms/$farmId/hives';
+      var response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          hives = data.map((hive) => Hive.fromJson(hive)).toList();
+        });
+      } else {
+        print('Failed to load hives: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error fetching hives data: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(0),
-              child: Column(
-                children: [
-                  SizedBox(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await getHives(widget.farmId);
+        },
+        child: Container(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(0),
+                child: Column(
+                  children: [
+                    SizedBox(
                       height: 150,
                       width: 2000,
                       child: Stack(
@@ -42,8 +107,6 @@ class _HivesState extends State<Hives> {
                               ),
                             ),
                           ),
-
-                          //image starts here
                           Padding(
                             padding: const EdgeInsets.only(top: 50.0),
                             child: Row(
@@ -79,232 +142,140 @@ class _HivesState extends State<Hives> {
                             ),
                           ),
                         ],
-                      )),
-
-                  //first card
-                  Center(
-                    child: SizedBox(
-                      width: 350,
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        color: Colors
-                            .brown[300], // Set the background color to gray
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            //table
-                            Table(
-                              children: [
-                                TableRow(
-                                  children: [
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Hive: 2 North',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              // color: Colors.grey[
-                                              //  300], // Background color
-                                            ),
-                                            child: Text(
-                                              'Healthy',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.orange[700]),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const HiveDetails(),
-                                                  ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'More Details',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ))),
-                                    ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                              color: Colors.orange[700],
-                                            ),
-                                            const Text(
-                                              'Mubende',
-                                              style: TextStyle(
-                                                //fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(0.0),
-                                      ),
-                                    ),
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(0.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.developer_board_outlined,
-                                              color: Colors.orange[700],
-                                            ),
-                                            const Text(
-                                              'Device:',
-                                              style: TextStyle(
-                                                //fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            child: Text(
-                                              'Connected',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.green[700]),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(left: 22),
-                              child: Row(
-                                // mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.hexagon,
-                                    color: Colors.orange[700],
-                                  ),
-                                  const Text(
-                                    'Recent Harvests',
-                                    style: TextStyle(
-                                      //fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Text(
-                                    '12/04/24  |  12kg',
-                                    style: TextStyle(
-                                      //fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const Padding(
-                              padding:
-                                  EdgeInsets.only(left: 0, bottom: 22, top: 8),
-                              child: Text(
-                                'check monitor',
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
-                  ),
-
-                  Container(
-                    height: 20,
-                  ),
-                  // Add other cards here
-
-                  Container(
-                    height: 20,
-                  ),
-                ],
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    // ListView.builder to dynamically create cards
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: hives.length,
+                      itemBuilder: (context, index) {
+                        return buildHiveCard(hives[index]);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
-//bottom navigation bar.
+    );
+  }
+
+  Widget buildHiveCard(Hive hive) {
+    return Center(
+      child: SizedBox(
+        width: 350,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          color: Colors.brown[300],
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Table(
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              'Hive ${hive.id}',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                'Healthy',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange[700]),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HiveDetails(hiveId: hive.id),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  'More Details',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ))),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 22),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.hexagon,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Recent Harvests',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      '12/04/24  |  12kg',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // const Padding(
+              //   padding: EdgeInsets.only(left: 0, bottom: 22, top: 8),
+              //   child: Text(
+              //     'check monitor',
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
