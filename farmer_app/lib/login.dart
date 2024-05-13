@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:farmer_app/home.dart';
+import 'dart:convert';
 import 'package:farmer_app/navbar.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:http/http.dart' as http;
@@ -15,10 +14,9 @@ class login extends StatefulWidget {
 
 final TextEditingController usernamecontroller = TextEditingController();
 final TextEditingController passwordcontroller = TextEditingController();
+var mytoken = '';
 
-Future Logmein(BuildContext context) async {
-//login code from postman
-
+Future<void> Logmein(BuildContext context) async {
   var headers = {'Accept': 'application/json'};
   var request = http.MultipartRequest(
       'POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
@@ -30,8 +28,16 @@ Future Logmein(BuildContext context) async {
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
-    //print success message
-    print(await response.stream.bytesToString());
+    // Extract the token from the response
+    String responseBody = await response.stream.bytesToString();
+    Map<String, dynamic> responseData = jsonDecode(responseBody);
+    String token = responseData['token'];
+
+    // Save the token for later use
+    saveToken(token);
+
+    // Print success message
+    print(token);
 
     Fluttertoast.showToast(
         msg: "Successful!",
@@ -42,15 +48,17 @@ Future Logmein(BuildContext context) async {
         textColor: Colors.white,
         fontSize: 16.0);
 
-    //Log the farmer in.
+    // Log the farmer in
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const navbar(),
+        builder: (context) => navbar(
+          token: mytoken,
+        ),
       ),
     );
   } else {
-    //print "unauthorized"
+    // Print "unauthorized"
     print("Wrong credentials!");
 
     Fluttertoast.showToast(
@@ -62,6 +70,11 @@ Future Logmein(BuildContext context) async {
         textColor: Colors.white,
         fontSize: 16.0);
   }
+}
+
+void saveToken(String token) {
+  // For simplicity, let's store it in a global variable
+  mytoken = token;
 }
 
 class _loginState extends State<login> {

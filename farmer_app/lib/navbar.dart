@@ -17,7 +17,8 @@ void main() {
 }
 
 class navbar extends StatefulWidget {
-  const navbar({super.key});
+  final String token;
+  const navbar({Key? key, required this.token}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -26,15 +27,24 @@ class navbar extends StatefulWidget {
 }
 
 class _navbarState extends State<navbar> {
+  //let me intialize the state and widget required variables here.
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = <Widget>[
+      const Home(),
+      Apiaries(
+        token: widget.token,
+      ),
+      const Notifications(),
+      const Records(),
+      //MyScreen(), //to use in debugging the toggler.
+    ];
+  }
+
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const Home(),
-    const Apiaries(),
-    const Notifications(),
-    const Records(),
-    //MyScreen(), //to use in debugging the toggler.
-  ];
+  static List<Widget> _widgetOptions = <Widget>[];
 
   @override
   Widget build(BuildContext context) {

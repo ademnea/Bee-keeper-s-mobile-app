@@ -5,7 +5,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:farmer_app/photo_view_page.dart';
 
 class Media extends StatefulWidget {
-  const Media({Key? key}) : super(key: key);
+  final int hiveId;
+  final String token;
+
+  const Media({Key? key, required this.hiveId, required this.token})
+      : super(key: key);
 
   @override
   State<Media> createState() => _MediaState();
@@ -17,16 +21,33 @@ class _MediaState extends State<Media> {
   @override
   void initState() {
     super.initState();
-    fetchPhotos();
+    fetchPhotos(widget.hiveId);
   }
 
-  Future<void> fetchPhotos() async {
+  Future<void> fetchPhotos(int hiveId) async {
     try {
-      final response = await http.get(Uri.parse(
-          'https://www.ademnea.net/api/v1/hives/1/images/2023-12-12/2024-12-12'));
+      String sendToken = "Bearer ${widget.token}";
+
+      var headers = {
+        'Accept': 'application/json',
+        'Authorization': sendToken,
+      };
+      var request = http.Request(
+          'GET',
+          Uri.parse(
+              'https://www.ademnea.net/api/v1/hives/$hiveId/images/2023-12-12/2024-12-12'));
+
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        List<dynamic> imagePaths = jsonData['imagePaths'];
+        String responseBody = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseBody);
+
+        print(jsonData);
+
+        List<dynamic> imagePaths = jsonData['paths'];
 
         setState(() {
           photos = imagePaths

@@ -1,15 +1,70 @@
-import 'package:farmer_app/components/graphs.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:farmer_app/components/graphs.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:http/http.dart' as http;
 
 class Humidity extends StatefulWidget {
-  const Humidity({super.key});
+  final int hiveId;
+  final String token;
+
+  const Humidity({Key? key, required this.hiveId, required this.token})
+      : super(key: key);
 
   @override
   State<Humidity> createState() => _HumidityState();
 }
 
 class _HumidityState extends State<Humidity> {
+  List<DateTime> dates = [];
+  List<double?> humidityValues = []; // Nullable double
+
+  @override
+  void initState() {
+    super.initState();
+    getHumidityData(widget.hiveId);
+  }
+
+  Future<void> getHumidityData(int hiveId) async {
+    try {
+      String sendToken = "Bearer ${widget.token}";
+
+      var headers = {
+        'Accept': 'application/json',
+        'Authorization': sendToken,
+      };
+      var request = http.Request(
+          'GET',
+          Uri.parse(
+              'https://www.ademnea.net/api/v1/hives/$hiveId/humidity/01-01-2024/12-06-2024'));
+
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        String responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> jsonData = jsonDecode(responseBody);
+
+        print(responseBody);
+
+        // Process data and assign to lists
+        dates = List<DateTime>.from(
+            jsonData['dates'].map((date) => DateTime.parse(date)));
+
+        humidityValues = List<double?>.from(jsonData['interiorHumidities']
+            .map((value) => double.tryParse(value?.toString() ?? '')));
+
+        setState(() {}); // Trigger a rebuild with the new data
+      } else {
+        print(response.reasonPhrase);
+      }
+    } catch (error) {
+      print('Error fetching humidity data: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,26 +83,29 @@ class _HumidityState extends State<Humidity> {
                         color: Colors.grey[300]),
                   ),
                 ),
-
                 Row(
                   children: [
                     TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(
-                          LineIcons.alternateCloudDownload,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        label: const Text('')),
+                      onPressed: () async {
+                        getHumidityData(widget.hiveId);
+                      },
+                      icon: const Icon(
+                        LineIcons.alternateCloudDownload,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      label: const Text(''),
+                    ),
                     const Spacer(),
                     TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(
-                          LineIcons.calendar,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        label: const Text('Choose Date')),
+                      onPressed: () {},
+                      icon: const Icon(
+                        LineIcons.calendar,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      label: const Text('Choose Date'),
+                    ),
                   ],
                 ), // end of buttons row.
                 //start of the graph
@@ -55,15 +113,16 @@ class _HumidityState extends State<Humidity> {
                   padding: const EdgeInsets.only(
                     top: 20,
                   ),
-                  child: const SizedBox(
+                  child: SizedBox(
                     width: double.infinity, // Adjust width as needed
                     height: 550, // Adjust height as needed
-                    // child: Graphs(
-                    //   xValues: [0, 1, 2, 3, 4, 5],
-                    //   yValues: [0, 3, 2, 4, 3, 5],
-                    //   xAxisLabel: 'Date',
-                    //   yAxisLabel: 'Temperature (F)',
-                    // ),
+
+                    child: Graphs(
+                      xValues: dates,
+                      yValues: humidityValues,
+                      xAxisLabel: 'Date',
+                      yAxisLabel: 'Humidity (%)',
+                    ),
                   ),
                 ),
               ],

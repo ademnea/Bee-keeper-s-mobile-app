@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 
 class HiveDetails extends StatefulWidget {
   final int hiveId;
-  const HiveDetails({Key? key, required this.hiveId}) : super(key: key);
+  final String token;
+  const HiveDetails({Key? key, required this.hiveId, required this.token})
+      : super(key: key);
 
   @override
   State<HiveDetails> createState() => _HiveDetailsState();
@@ -134,7 +136,10 @@ class _HiveDetailsState extends State<HiveDetails> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const TabView(),
+                                        builder: (context) => TabView(
+                                          hiveId: widget.hiveId,
+                                          token: widget.token,
+                                        ),
                                       ),
                                     );
                                   },

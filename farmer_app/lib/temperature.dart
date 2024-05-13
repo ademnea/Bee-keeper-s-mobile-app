@@ -6,7 +6,11 @@ import 'package:line_icons/line_icons.dart';
 import 'package:http/http.dart' as http;
 
 class Temperature extends StatefulWidget {
-  const Temperature({Key? key}) : super(key: key);
+  final int hiveId;
+  final String token;
+
+  const Temperature({Key? key, required this.hiveId, required this.token})
+      : super(key: key);
 
   @override
   State<Temperature> createState() => _TemperatureState();
@@ -19,19 +23,21 @@ class _TemperatureState extends State<Temperature> {
   @override
   void initState() {
     super.initState();
-    getTempData();
+    getTempData(widget.hiveId);
   }
 
-  Future<void> getTempData() async {
+  Future<void> getTempData(int hiveId) async {
     try {
+      String sendToken = "Bearer ${widget.token}";
+
       var headers = {
         'Accept': 'application/json',
-        'Authorization': 'Bearer 7|5gtx0HM2FVwiLHeCT4iBACSS6oBFYNNCo3C72pKa'
+        'Authorization': sendToken,
       };
       var request = http.Request(
           'GET',
           Uri.parse(
-              'https://www.ademnea.net/api/v1/hives/1/temperature/01-01-2024/12-06-2024'));
+              'https://www.ademnea.net/api/v1/hives/$hiveId/temperature/01-01-2024/12-06-2024'));
 
       request.headers.addAll(headers);
 
@@ -40,6 +46,8 @@ class _TemperatureState extends State<Temperature> {
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
         Map<String, dynamic> jsonData = jsonDecode(responseBody);
+
+        print(responseBody);
 
         // Process data and assign to lists
         dates = List<DateTime>.from(
@@ -79,7 +87,7 @@ class _TemperatureState extends State<Temperature> {
                   children: [
                     TextButton.icon(
                       onPressed: () async {
-                        getTempData();
+                        getTempData(widget.hiveId);
                       },
                       icon: const Icon(
                         LineIcons.alternateCloudDownload,

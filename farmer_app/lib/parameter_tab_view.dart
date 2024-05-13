@@ -1,11 +1,20 @@
+import 'package:flutter/material.dart';
 import 'package:farmer_app/humidity.dart';
 import 'package:farmer_app/media.dart';
 import 'package:farmer_app/temperature.dart';
-import 'package:flutter/material.dart';
 
-class TabView extends StatelessWidget {
-  const TabView({super.key});
+class TabView extends StatefulWidget {
+  final int hiveId;
+  final String token;
 
+  const TabView({Key? key, required this.hiveId, required this.token})
+      : super(key: key);
+
+  @override
+  _TabViewState createState() => _TabViewState();
+}
+
+class _TabViewState extends State<TabView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,9 +65,9 @@ class TabView extends StatelessWidget {
                               const SizedBox(
                                 width: 90,
                               ),
-                              const Text(
-                                'Monitors',
-                                style: TextStyle(
+                              Text(
+                                'Hive ${widget.hiveId}',
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 20),
                               ),
                               const Spacer(),
@@ -117,12 +126,21 @@ class TabView extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Expanded(
+                          Expanded(
                             child: TabBarView(
                               children: [
-                                Center(child: Temperature()),
-                                Center(child: Humidity()),
-                                Center(child: Media()),
+                                Center(
+                                    child: Temperature(
+                                        hiveId: widget.hiveId,
+                                        token: widget.token)),
+                                Center(
+                                    child: Humidity(
+                                        hiveId: widget.hiveId,
+                                        token: widget.token)),
+                                Center(
+                                    child: Media(
+                                        hiveId: widget.hiveId,
+                                        token: widget.token)),
                               ],
                             ),
                           ),

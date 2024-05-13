@@ -5,8 +5,10 @@ import 'dart:convert';
 
 class Hives extends StatefulWidget {
   final int farmId;
+  final String token;
 
-  const Hives({Key? key, required this.farmId}) : super(key: key);
+  const Hives({Key? key, required this.farmId, required this.token})
+      : super(key: key);
 
   @override
   State<Hives> createState() => _HivesState();
@@ -52,8 +54,10 @@ class _HivesState extends State<Hives> {
 
   Future<void> getHives(int farmId) async {
     try {
+      String sendToken = "Bearer ${widget.token}";
+
       var headers = {
-        'Authorization': 'Bearer 7|5gtx0HM2FVwiLHeCT4iBACSS6oBFYNNCo3C72pKa'
+        'Authorization': sendToken,
       };
 
       var url = 'https://www.ademnea.net/api/v1/farms/$farmId/hives';
@@ -191,7 +195,8 @@ class _HivesState extends State<Hives> {
                           child: Center(
                             child: Text(
                               'Hive ${hive.id}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -224,8 +229,10 @@ class _HivesState extends State<Hives> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          HiveDetails(hiveId: hive.id),
+                                      builder: (context) => HiveDetails(
+                                        hiveId: hive.id,
+                                        token: widget.token,
+                                      ),
                                     ),
                                   );
                                 },

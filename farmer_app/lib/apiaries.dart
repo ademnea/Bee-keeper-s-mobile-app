@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:farmer_app/hives.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Apiaries extends StatefulWidget {
-  const Apiaries({Key? key}) : super(key: key);
+  final String token;
+
+  const Apiaries({Key? key, required this.token}) : super(key: key);
 
   @override
   State<Apiaries> createState() => _ApiariesState();
@@ -54,9 +57,11 @@ class _ApiariesState extends State<Apiaries> {
 
   Future<void> getApiaries() async {
     try {
+      String send_token = "Bearer " + widget.token;
+
       var headers = {
         'Accept': 'application/json',
-        'Authorization': 'Bearer 7|5gtx0HM2FVwiLHeCT4iBACSS6oBFYNNCo3C72pKa'
+        'Authorization': send_token,
       };
       var response = await http.get(
         Uri.parse('https://www.ademnea.net/api/v1/farms/'),
@@ -230,7 +235,8 @@ class _ApiariesState extends State<Apiaries> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Hives(farmId: farm.id),
+                                  builder: (context) => Hives(
+                                      farmId: farm.id, token: widget.token),
                                 ),
                               );
                             },
