@@ -17,14 +17,12 @@ class HiveVideos extends StatefulWidget {
 }
 
 class _HiveVideosState extends State<HiveVideos> {
-  late FlickManager flickmanager;
   List<String> videos = [];
 
   @override
   void initState() {
     super.initState();
-    flickmanager =
-        FlickManager(videoPlayerController: VideoPlayerController.networkUrl());
+
     fetchVideos(widget.hiveId);
   }
 
@@ -200,7 +198,7 @@ class _HiveVideosState extends State<HiveVideos> {
                                             ),
                                           ),
 
-                                          // video ends here ends here 
+                                          // video ends here ends here
                                         ),
                                       ),
                                     );
