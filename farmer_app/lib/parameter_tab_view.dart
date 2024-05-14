@@ -1,3 +1,4 @@
+import 'package:farmer_app/mediamenu.dart';
 import 'package:flutter/material.dart';
 import 'package:farmer_app/humidity.dart';
 import 'package:farmer_app/media.dart';
@@ -22,6 +23,7 @@ class _TabViewState extends State<TabView> {
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
+              
               padding: const EdgeInsets.all(0),
               child: Column(
                 children: [
@@ -137,9 +139,7 @@ class _TabViewState extends State<TabView> {
                                     child: Humidity(
                                         hiveId: widget.hiveId,
                                         token: widget.token)),
-                                Center(
-                                    child: Media(
-                                        hiveId: widget.hiveId,
+                                Center(child: Mediamenu(hiveId: widget.hiveId,
                                         token: widget.token)),
                               ],
                             ),

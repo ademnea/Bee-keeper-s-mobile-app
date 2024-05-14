@@ -185,41 +185,8 @@ class _HiveDetailsState extends State<HiveDetails> {
                                         fontSize: 17),
                                   ),
                                 ),
-                                const Spacer(),
-                                // TextButton(
-                                //   onPressed: () {
-                                //     Navigator.push(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const Splashscreen(),
-                                //       ),
-                                //     );
-                                //   },
-                                //   child: Text(
-                                //     'Feeding time',
-                                //     style: TextStyle(
-                                //         color: Colors.grey[200],
-                                //         // decoration: TextDecoration.underline,
-                                //         fontSize: 17),
-                                //   ),
-                                // ),
                               ],
                             ),
-
-                            // Container(
-                            //   child: TableCalendar(
-                            //     firstDay: DateTime.utc(2010, 10, 16),
-                            //     lastDay: DateTime.utc(2030, 3, 14),
-                            //     focusedDay: DateTime.now(),
-                            //   ),
-                            // ),
-                            // Divider(
-                            //   height: 1, // Set the height of the divider
-                            //   color: Colors
-                            //       .grey[350], // Set the color of the divider
-                            //   thickness: 2, // Set the thickness of the divider
-                            // ),
 
                             //notifications start here.
                             Container(

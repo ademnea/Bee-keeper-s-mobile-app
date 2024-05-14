@@ -1,30 +1,34 @@
+import 'package:farmer_app/photo_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:farmer_app/photo_view_page.dart';
 
-class Media extends StatefulWidget {
+class HiveVideos extends StatefulWidget {
   final int hiveId;
   final String token;
 
-  const Media({Key? key, required this.hiveId, required this.token})
+  const HiveVideos({Key? key, required this.hiveId, required this.token})
       : super(key: key);
 
   @override
-  State<Media> createState() => _MediaState();
+  State<HiveVideos> createState() => _HiveVideosState();
 }
 
-class _MediaState extends State<Media> {
-  List<String> photos = [];
+class _HiveVideosState extends State<HiveVideos> {
+  late FlickManager flickmanager;
+  List<String> videos = [];
 
   @override
   void initState() {
     super.initState();
-    fetchPhotos(widget.hiveId);
+    flickmanager =
+        FlickManager(videoPlayerController: VideoPlayerController.networkUrl());
+    fetchVideos(widget.hiveId);
   }
 
-  Future<void> fetchPhotos(int hiveId) async {
+  Future<void> fetchVideos(int hiveId) async {
     try {
       String sendToken = "Bearer ${widget.token}";
 
@@ -35,11 +39,13 @@ class _MediaState extends State<Media> {
       var request = http.Request(
           'GET',
           Uri.parse(
-              'https://www.ademnea.net/api/v1/hives/$hiveId/images/2023-12-12/2024-12-12'));
+              'https://www.ademnea.net/api/v1/hives/$hiveId/videos/2023-12-12/2024-12-12'));
 
       request.headers.addAll(headers);
 
       http.StreamedResponse response = await request.send();
+
+      print(response);
 
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
@@ -47,19 +53,19 @@ class _MediaState extends State<Media> {
 
         print(jsonData);
 
-        List<dynamic> imagePaths = jsonData['paths'];
+        List<dynamic> videoPaths = jsonData['paths'];
 
         setState(() {
-          photos = imagePaths
+          videos = videoPaths
               .map<String>((path) =>
                   'https://www.ademnea.net/${path.replaceFirst("public/", "")}')
               .toList();
         });
       } else {
-        throw Exception('Failed to load photos');
+        throw Exception('Failed to load videos');
       }
     } catch (error) {
-      print('Error fetching photos: $error');
+      print('Error fetching videos: $error');
     }
   }
 
@@ -114,7 +120,7 @@ class _MediaState extends State<Media> {
                                 width: 55,
                               ),
                               Text(
-                                'Hive ${widget.hiveId} images',
+                                'Hive ${widget.hiveId} videos',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 20),
                               ),
@@ -160,7 +166,7 @@ class _MediaState extends State<Media> {
                                     parent: AlwaysScrollableScrollPhysics(),
                                   ),
                                   padding: const EdgeInsets.all(1.0),
-                                  itemCount: photos.length,
+                                  itemCount: videos.length,
                                   gridDelegate:
                                       const SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 3,
@@ -173,15 +179,17 @@ class _MediaState extends State<Media> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => PhotoViewPage(
-                                              photos: photos,
+                                              photos: videos,
                                               index: index,
                                             ),
                                           ),
                                         ),
                                         child: Hero(
-                                          tag: photos[index],
+                                          tag: videos[index],
+
+                                          //this is where a video is specified.
                                           child: CachedNetworkImage(
-                                            imageUrl: photos[index],
+                                            imageUrl: videos[index],
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
                                                 Container(color: Colors.grey),
@@ -191,6 +199,8 @@ class _MediaState extends State<Media> {
                                               color: Colors.red.shade400,
                                             ),
                                           ),
+
+                                          // video ends here ends here 
                                         ),
                                       ),
                                     );
