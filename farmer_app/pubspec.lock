@@ -81,6 +81,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  chewie:
+    dependency: "direct dev"
+    description:
+      name: chewie
+      sha256: "1fc84d88d3b1dc26b1fe799500e2ebcc8916af30ce62595ad802cfd965b60bc3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.8.0"
   clock:
     dependency: transitive
     description:
@@ -630,7 +638,7 @@ packages:
     source: hosted
     version: "2.1.4"
   video_player:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: video_player
       sha256: db6a72d8f4fd155d0189845678f55ad2fd54b02c10dcafd11c068dbb631286c0

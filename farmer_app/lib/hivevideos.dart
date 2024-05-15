@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 
 class HiveVideos extends StatefulWidget {
   final int hiveId;
@@ -22,7 +24,6 @@ class _HiveVideosState extends State<HiveVideos> {
   @override
   void initState() {
     super.initState();
-
     fetchVideos(widget.hiveId);
   }
 
@@ -43,13 +44,9 @@ class _HiveVideosState extends State<HiveVideos> {
 
       http.StreamedResponse response = await request.send();
 
-      print(response);
-
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
         final jsonData = jsonDecode(responseBody);
-
-        print(jsonData);
 
         List<dynamic> videoPaths = jsonData['paths'];
 
@@ -173,32 +170,22 @@ class _HiveVideosState extends State<HiveVideos> {
                                     return Container(
                                       padding: const EdgeInsets.all(1.0),
                                       child: InkWell(
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => PhotoViewPage(
-                                              photos: videos,
-                                              index: index,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => PhotoViewPage(
+                                                photos: videos,
+                                                index: index,
+                                              ),
                                             ),
-                                          ),
-                                        ),
+                                          );
+                                        },
                                         child: Hero(
                                           tag: videos[index],
-
-                                          //this is where a video is specified.
-                                          child: CachedNetworkImage(
-                                            imageUrl: videos[index],
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                Container(color: Colors.grey),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Container(
-                                              color: Colors.red.shade400,
-                                            ),
+                                          child: VideoThumbnail(
+                                            videoUrl: videos[index],
                                           ),
-
-                                          // video ends here ends here
                                         ),
                                       ),
                                     );
@@ -216,6 +203,68 @@ class _HiveVideosState extends State<HiveVideos> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class VideoThumbnail extends StatefulWidget {
+  final String videoUrl;
+
+  const VideoThumbnail({Key? key, required this.videoUrl}) : super(key: key);
+
+  @override
+  _VideoThumbnailState createState() => _VideoThumbnailState();
+}
+
+class _VideoThumbnailState extends State<VideoThumbnail> {
+  late VideoPlayerController _videoPlayerController;
+  late ChewieController _chewieController;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    //
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      autoPlay: true,
+      looping: true,
+      aspectRatio: 9 / 9, // Adjust aspect ratio if necessary
+      placeholder: Container(
+        color: Color.fromARGB(255, 206, 109, 40),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => Chewie(controller: _chewieController),
+        ));
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Chewie(
+            controller: _chewieController.copyWith(autoPlay: true),
+          ),
+          const Icon(
+            Icons.play_arrow,
+            size: 40,
+            color: Colors.white,
+          ),
+        ],
       ),
     );
   }
