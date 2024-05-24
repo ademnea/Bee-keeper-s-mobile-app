@@ -91,7 +91,7 @@ class _HivesState extends State<Hives> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 150,
+                      height: 130,
                       width: 2000,
                       child: Stack(
                         children: [
@@ -128,10 +128,10 @@ class _HivesState extends State<Hives> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 100,
+                                  width: 10,
                                 ),
                                 const Text(
-                                  'Hives',
+                                  'Prototype Apiary Hives',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
@@ -148,9 +148,7 @@ class _HivesState extends State<Hives> {
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+
                     // ListView.builder to dynamically create cards
                     ListView.builder(
                       shrinkWrap: true,

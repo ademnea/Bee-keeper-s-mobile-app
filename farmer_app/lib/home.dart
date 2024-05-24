@@ -1,7 +1,5 @@
-import 'package:farmer_app/parameter_tab_view.dart';
-import 'package:farmer_app/splashscreen.dart';
+import 'package:farmer_app/components/bar_graph.dart';
 import 'package:flutter/material.dart';
-import 'package:farmer_app/navbar.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -11,6 +9,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  //list of the data.
+  List<double> weeklySummary = [
+    80.40,
+    2.50,
+    42.42,
+    10.50,
+    100.20,
+    68.99,
+    90.10,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,7 +140,35 @@ class _HomeState extends State<Home> {
                           ),
                         ],
                       )),
-
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Text(
+                    'Last Week Temperatures',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  //lets put the graph here.
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: SizedBox(
+                        width: 350,
+                        height: 250,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: MyBarGraph(
+                            weeklySummary: weeklySummary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   //first card
                   Center(
                     child: SizedBox(

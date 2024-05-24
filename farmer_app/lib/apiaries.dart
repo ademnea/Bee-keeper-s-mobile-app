@@ -92,7 +92,7 @@ class _ApiariesState extends State<Apiaries> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 150,
+                    height: 140,
                     width: 2000,
                     child: Stack(
                       children: [
@@ -143,9 +143,7 @@ class _ApiariesState extends State<Apiaries> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+
                   // ListView.builder to dynamically create cards
                   ListView.builder(
                     shrinkWrap: true,
