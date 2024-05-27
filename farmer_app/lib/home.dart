@@ -1,5 +1,6 @@
 import 'package:farmer_app/components/bar_graph.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -167,9 +168,32 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                      //height: 20,
+                      ),
+
+                  //season progress bar here.
+
+                  Center(
+                    child: CircularPercentIndicator(
+                      animation: true,
+                      animationDuration: 1000,
+                      radius: 150,
+                      lineWidth: 30,
+                      percent: 0.4,
+                      progressColor: Colors.orange,
+                      backgroundColor: Colors.deepOrange.shade100,
+                      circularStrokeCap: CircularStrokeCap.round,
+                      center: const Text(
+                        '40%',
+                        style: TextStyle(
+                          fontSize: 60,
+                          color: Colors.deepOrange,
+                        ),
+                      ), // Text
+                    ), // CircularPercentIndicator
                   ),
-                  //first card
+
+                  //recent harvests card
                   Center(
                     child: SizedBox(
                       width: 350,

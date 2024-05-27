@@ -84,6 +84,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                           ),
                         ],
                       )),
+                      
                   //image starts here
                   SizedBox(
                     width: double.infinity,
