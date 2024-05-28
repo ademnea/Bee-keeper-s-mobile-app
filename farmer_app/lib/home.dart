@@ -1,6 +1,7 @@
 import 'package:farmer_app/components/bar_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -145,12 +146,59 @@ class _HomeState extends State<Home> {
                     height: 10,
                   ),
                   const Text(
-                    'Last Week Temperatures',
+                    'Heaviest Hive',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
+
+                  Center(
+                    child: Container(
+                      height: 250,
+                      width: 300,
+                      child: LiquidLinearProgressIndicator(
+                        value: 0.65, // Defaults to 0.5.
+                        valueColor: const AlwaysStoppedAnimation(Colors
+                            .orange), // Defaults to the current Theme's accentColor.
+                        backgroundColor: Colors
+                            .white, // Defaults to the current Theme's backgroundColor.
+                        borderColor: Colors.brown,
+                        borderWidth: 5.0,
+                        borderRadius: 12.0,
+                        direction: Axis
+                            .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.horizontal.
+                        center: TextButton(
+                          onPressed: () {
+                            // Define what happens when the button is pressed
+                          },
+                          child: const Text(
+                            "Hive 2 at 65%",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 20,
+                  ),
+
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Text(
+                    'Hottest Hive',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+
                   //lets put the graph here.
                   Center(
                     child: Padding(
@@ -168,8 +216,16 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   const SizedBox(
-                      //height: 20,
-                      ),
+                    height: 20,
+                  ),
+
+                  const Text(
+                    'Honey Harvest Season',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
                   //season progress bar here.
 
@@ -177,20 +233,31 @@ class _HomeState extends State<Home> {
                     child: CircularPercentIndicator(
                       animation: true,
                       animationDuration: 1000,
-                      radius: 150,
+                      radius: 130,
                       lineWidth: 30,
                       percent: 0.4,
                       progressColor: Colors.orange,
                       backgroundColor: Colors.deepOrange.shade100,
                       circularStrokeCap: CircularStrokeCap.round,
                       center: const Text(
-                        '40%',
+                        '4 months left',
                         style: TextStyle(
-                          fontSize: 60,
+                          fontSize: 25,
                           color: Colors.deepOrange,
                         ),
-                      ), // Text
+                      ),
+// Text
                     ), // CircularPercentIndicator
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  const Text(
+                    'Most Recent Harvests',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
 
                   //recent harvests card

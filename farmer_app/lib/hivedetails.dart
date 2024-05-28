@@ -3,6 +3,8 @@ import 'package:farmer_app/parameter_tab_view.dart';
 import 'package:farmer_app/splashscreen.dart';
 import 'package:farmer_app/components/notificationbar.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class HiveDetails extends StatefulWidget {
   final int hiveId;
@@ -15,6 +17,53 @@ class HiveDetails extends StatefulWidget {
 }
 
 class _HiveDetailsState extends State<HiveDetails> {
+  List<String> photos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPhotos(widget.hiveId);
+  }
+
+  Future<void> fetchPhotos(int hiveId) async {
+    try {
+      String sendToken = "Bearer ${widget.token}";
+
+      var headers = {
+        'Accept': 'application/json',
+        'Authorization': sendToken,
+      };
+      var request = http.Request(
+          'GET',
+          Uri.parse(
+              'https://www.ademnea.net/api/v1/hives/$hiveId/images/2023-12-12/2024-12-12'));
+
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        String responseBody = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseBody);
+
+        print(jsonData);
+
+        List<dynamic> imagePaths = jsonData['paths'];
+
+        setState(() {
+          photos = imagePaths
+              .map<String>((path) =>
+                  'https://www.ademnea.net/${path.replaceFirst("public/", "")}')
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load photos');
+      }
+    } catch (error) {
+      print('Error fetching photos: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,17 +133,21 @@ class _HiveDetailsState extends State<HiveDetails> {
                           ),
                         ],
                       )),
-                      
+
                   //image starts here
-                  SizedBox(
-                    width: double.infinity,
-                    child: ImageSlider(),
-                  ),
+                  if (photos.isNotEmpty)
+                    SizedBox(
+                      width: double.infinity,
+                      child: ImageSlider(
+                        imageUrls: photos,
+                      ),
+                    ),
 
                   //first card
                   Center(
                     child: SizedBox(
                       width: double.infinity,
+                      height: 600,
                       child: Card(
                         clipBehavior: Clip.antiAlias,
 

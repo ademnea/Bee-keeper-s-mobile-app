@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:line_icons/line_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:farmer_app/photo_view_page.dart';
 
@@ -23,6 +24,7 @@ class _MediaState extends State<Media> {
     super.initState();
     fetchPhotos(widget.hiveId);
   }
+  //
 
   Future<void> fetchPhotos(int hiveId) async {
     try {
@@ -45,7 +47,7 @@ class _MediaState extends State<Media> {
         String responseBody = await response.stream.bytesToString();
         final jsonData = jsonDecode(responseBody);
 
-        print(jsonData);
+        //  print(jsonData);
 
         List<dynamic> imagePaths = jsonData['paths'];
 
@@ -149,53 +151,73 @@ class _MediaState extends State<Media> {
                       length: 3, // Number of tabs
                       child: Column(
                         children: [
+                          Row(
+                            children: [
+                              TextButton.icon(
+                                onPressed: () async {
+                                  fetchPhotos(widget.hiveId);
+                                },
+                                icon: const Icon(
+                                  LineIcons.alternateCloudDownload,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                label: const Text(''),
+                              ),
+                              const Spacer(),
+                              TextButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  LineIcons.calendar,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                label: const Text('Choose Date'),
+                              ),
+                            ],
+                          ),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
-                              child: Container(
-                                color: Colors.white,
-                                width: double.infinity,
-                                child: GridView.builder(
-                                  physics: const BouncingScrollPhysics(
-                                    parent: AlwaysScrollableScrollPhysics(),
-                                  ),
-                                  padding: const EdgeInsets.all(1.0),
-                                  itemCount: photos.length,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                  ),
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: InkWell(
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => PhotoViewPage(
-                                              photos: photos,
-                                              index: index,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Hero(
-                                          tag: photos[index],
-                                          child: CachedNetworkImage(
-                                            imageUrl: photos[index],
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                Container(color: Colors.grey),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Container(
-                                              color: Colors.red.shade400,
-                                            ),
+                              child: GridView.builder(
+                                physics: const BouncingScrollPhysics(
+                                    //  parent: AlwaysScrollableScrollPhysics(),
+                                    ),
+                                padding: const EdgeInsets.all(1.0),
+                                itemCount: photos.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                ),
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(1.0),
+                                    child: InkWell(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => PhotoViewPage(
+                                            photos: photos,
+                                            index: index,
                                           ),
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
+                                      child: Hero(
+                                        tag: photos[index],
+                                        child: CachedNetworkImage(
+                                          imageUrl: photos[index],
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              Container(color: Colors.grey),
+                                          errorWidget: (context, url, error) =>
+                                              Container(
+                                            color: Colors.red.shade400,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),

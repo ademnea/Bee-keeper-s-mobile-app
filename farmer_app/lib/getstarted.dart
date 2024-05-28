@@ -1,5 +1,4 @@
 import 'package:farmer_app/login.dart';
-import 'package:farmer_app/register.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -131,6 +130,8 @@ class _GetStartedState extends State<GetStarted> {
                         'GET STARTED',
                         style: TextStyle(
                           fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),

@@ -2,6 +2,7 @@ import 'package:farmer_app/photo_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:line_icons/line_icons.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
@@ -150,47 +151,68 @@ class _HiveVideosState extends State<HiveVideos> {
                       length: 3, // Number of tabs
                       child: Column(
                         children: [
+                          Row(
+                            children: [
+                              TextButton.icon(
+                                onPressed: () async {
+                                  fetchVideos(widget.hiveId);
+                                },
+                                icon: const Icon(
+                                  LineIcons.alternateCloudDownload,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                label: const Text(''),
+                              ),
+                              const Spacer(),
+                              TextButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  LineIcons.calendar,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                label: const Text('Choose Date'),
+                              ),
+                            ],
+                          ),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
-                              child: Container(
-                                color: Colors.white,
-                                width: double.infinity,
-                                child: GridView.builder(
-                                  physics: const BouncingScrollPhysics(
-                                    parent: AlwaysScrollableScrollPhysics(),
-                                  ),
-                                  padding: const EdgeInsets.all(1.0),
-                                  itemCount: videos.length,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                  ),
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      padding: const EdgeInsets.all(1.0),
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => PhotoViewPage(
-                                                photos: videos,
-                                                index: index,
-                                              ),
+                              child: GridView.builder(
+                                physics: const BouncingScrollPhysics(
+                                    // parent: AlwaysScrollableScrollPhysics(),
+                                    ),
+                                padding: const EdgeInsets.all(1.0),
+                                itemCount: videos.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                ),
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(1.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => PhotoViewPage(
+                                              photos: videos,
+                                              index: index,
                                             ),
-                                          );
-                                        },
-                                        child: Hero(
-                                          tag: videos[index],
-                                          child: VideoThumbnail(
-                                            videoUrl: videos[index],
                                           ),
+                                        );
+                                      },
+                                      child: Hero(
+                                        tag: videos[index],
+                                        child: VideoThumbnail(
+                                          videoUrl: videos[index],
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -224,6 +246,7 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
   @override
   void initState() {
     super.initState();
+    //dispose();
     _videoPlayerController =
         VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
     //
@@ -254,10 +277,10 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
         ));
       },
       child: Stack(
-        alignment: Alignment.center,
+        // alignment: Alignment.center,
         children: [
           Chewie(
-            controller: _chewieController.copyWith(autoPlay: true),
+            controller: _chewieController.copyWith(autoPlay: false),
           ),
           const Icon(
             Icons.play_arrow,

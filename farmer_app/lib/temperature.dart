@@ -47,7 +47,7 @@ class _TemperatureState extends State<Temperature> {
         String responseBody = await response.stream.bytesToString();
         Map<String, dynamic> jsonData = jsonDecode(responseBody);
 
-        print(responseBody);
+        //  print(responseBody);
 
         // Process data and assign to lists
         dates = List<DateTime>.from(

@@ -47,7 +47,7 @@ class _HumidityState extends State<Humidity> {
         String responseBody = await response.stream.bytesToString();
         Map<String, dynamic> jsonData = jsonDecode(responseBody);
 
-        print(responseBody);
+        // print(responseBody);
 
         // Process data and assign to lists
         dates = List<DateTime>.from(
@@ -61,7 +61,7 @@ class _HumidityState extends State<Humidity> {
         print(response.reasonPhrase);
       }
     } catch (error) {
-      print('Error fetching humidity data: $error');
+      // print('Error fetching humidity data: $error');
     }
   }
 

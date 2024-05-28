@@ -37,7 +37,7 @@ Future<void> Logmein(BuildContext context) async {
     saveToken(token);
 
     // Print success message
-    print(token);
+    // print(token);
 
     Fluttertoast.showToast(
         msg: "Successful!",
@@ -59,7 +59,7 @@ Future<void> Logmein(BuildContext context) async {
     );
   } else {
     // Print "unauthorized"
-    print("Wrong credentials!");
+    // print("Wrong credentials!");
 
     Fluttertoast.showToast(
         msg: "Wrong Credentials!",
@@ -213,6 +213,7 @@ class _loginState extends State<login> {
                           'Login',
                           style: TextStyle(
                             fontSize: 18,
+                            color: Colors.white,
                           ),
                         ),
                       ),

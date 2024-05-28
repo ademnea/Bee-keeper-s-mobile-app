@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:farmer_app/hivedetails.dart';
 import 'package:http/http.dart' as http;
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'dart:convert';
 
 class Hives extends StatefulWidget {
@@ -69,99 +70,108 @@ class _HivesState extends State<Hives> {
           hives = data.map((hive) => Hive.fromJson(hive)).toList();
         });
       } else {
-        print('Failed to load hives: ${response.reasonPhrase}');
+        // print('Failed to load hives: ${response.reasonPhrase}');
       }
     } catch (error) {
-      print('Error fetching hives data: $error');
+      // print('Error fetching hives data: $error');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
+        color: Colors.orange,
+        height: 150,
+        animSpeedFactor: 2,
         onRefresh: () async {
           await getHives(widget.farmId);
         },
         child: Container(
-          child: SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(0),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 130,
-                      width: 2000,
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.orange.withOpacity(0.8),
-                                  Colors.orange.withOpacity(0.6),
-                                  Colors.orange.withOpacity(0.4),
-                                  Colors.orange.withOpacity(0.2),
-                                  Colors.orange.withOpacity(0.1),
-                                  Colors.transparent,
+          child: ListView(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 130,
+                        width: 2000,
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.orange.withOpacity(0.8),
+                                    Colors.orange.withOpacity(0.6),
+                                    Colors.orange.withOpacity(0.4),
+                                    Colors.orange.withOpacity(0.2),
+                                    Colors.orange.withOpacity(0.1),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    child: IconButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: const Icon(
+                                        Icons.chevron_left_rounded,
+                                        color:
+                                            Color.fromARGB(255, 206, 109, 40),
+                                        size: 65,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    'Prototype Apiary Hives',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.person,
+                                    color: Color.fromARGB(255, 206, 109, 40),
+                                    size: 65,
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 50.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(
-                                      Icons.chevron_left_rounded,
-                                      color: Color.fromARGB(255, 206, 109, 40),
-                                      size: 65,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Text(
-                                  'Prototype Apiary Hives',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                                ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.person,
-                                  color: Color.fromARGB(255, 206, 109, 40),
-                                  size: 65,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
 
-                    // ListView.builder to dynamically create cards
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: hives.length,
-                      itemBuilder: (context, index) {
-                        return buildHiveCard(hives[index]);
-                      },
-                    ),
-                  ],
+                      // ListView.builder to dynamically create cards
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 50),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: hives.length,
+                          itemBuilder: (context, index) {
+                            return buildHiveCard(hives[index]);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -183,70 +193,8 @@ class _HivesState extends State<Hives> {
               const SizedBox(
                 height: 10,
               ),
-              Table(
-                children: [
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Text(
-                              'Hive ${hive.id}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Healthy',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.orange[700]),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HiveDetails(
-                                        hiveId: hive.id,
-                                        token: widget.token,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  'More Details',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ))),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 22),
+                padding: const EdgeInsets.only(left: 22, bottom: 5),
                 child: Row(
                   children: [
                     Icon(
@@ -254,7 +202,7 @@ class _HivesState extends State<Hives> {
                       color: Colors.orange[700],
                     ),
                     const Text(
-                      'Recent Harvests',
+                      'Hive Name: ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -262,21 +210,118 @@ class _HivesState extends State<Hives> {
                     const SizedBox(
                       width: 10,
                     ),
+                    Text(
+                      'Hive ${hive.id}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 17,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HiveDetails(
+                                hiveId: hive.id,
+                                token: widget.token,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Hive Data',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.developer_board_rounded,
+                      color: Colors.orange[700],
+                    ),
                     const Text(
-                      '12/04/24  |  12kg',
+                      'Device:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      ' Connected ',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.thermostat,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Temperature:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      ' 25°C',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 20),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.scale_rounded,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Weight:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      ' 23Kg',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    const Spacer(),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 20),
+                      child: Text(
+                        ' Colonized',
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.white),
                       ),
                     ),
                   ],
                 ),
               ),
-              // const Padding(
-              //   padding: EdgeInsets.only(left: 0, bottom: 22, top: 8),
-              //   child: Text(
-              //     'check monitor',
-              //   ),
-              // ),
             ],
           ),
         ),
