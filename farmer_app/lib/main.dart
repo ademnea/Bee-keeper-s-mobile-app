@@ -1,10 +1,16 @@
 import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:farmer_app/Services/notifi_service.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
+  runApp(MaterialApp(
     home: Splashscreen(),
     debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
   ));
 }
 

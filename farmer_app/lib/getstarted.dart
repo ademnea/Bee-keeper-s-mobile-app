@@ -83,6 +83,7 @@ class _GetStartedState extends State<GetStarted> {
                               TextAlign.center, // Center text horizontally
                           style: const TextStyle(
                             fontSize: 24,
+                            fontFamily: 'Sans',
                             // fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),

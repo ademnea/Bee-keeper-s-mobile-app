@@ -1,6 +1,4 @@
 import 'dart:async';
-//import 'dart:js';
-
 import 'package:farmer_app/getstarted.dart';
 import 'package:farmer_app/login.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +17,6 @@ class _SplashscreenState extends State<Splashscreen> {
     super.initState();
 
     Timer(const Duration(seconds: 3), () {
-      //check whether its the first time to route to the appropriate page
       _checkFirstTime();
     });
   }
@@ -27,14 +24,18 @@ class _SplashscreenState extends State<Splashscreen> {
   Future<void> _checkFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
     if (isFirstTime) {
       // Show Get Started Screen
+      print('First time user, navigating to GetStarted');
+      await prefs.setBool('isFirstTime', false); // Set isFirstTime to false
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => GetStarted()),
       );
     } else {
       // Skip to Home Screen
+      print('Not first time user, navigating to login');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => login()),

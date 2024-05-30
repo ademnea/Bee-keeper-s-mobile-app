@@ -147,11 +147,17 @@ class _HomeState extends State<Home> {
                   ),
                   const Text(
                     'Heaviest Hive',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: 'Sans'),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
+
+                  //bees animation
+                  Center(),
 
                   Center(
                     child: Container(
@@ -160,9 +166,9 @@ class _HomeState extends State<Home> {
                       child: LiquidLinearProgressIndicator(
                         value: 0.65, // Defaults to 0.5.
                         valueColor: const AlwaysStoppedAnimation(Colors
-                            .orange), // Defaults to the current Theme's accentColor.
-                        backgroundColor: Colors
-                            .white, // Defaults to the current Theme's backgroundColor.
+                            .amber), // Defaults to the current Theme's accentColor.
+                        backgroundColor: Colors.amber[
+                            100], // Defaults to the current Theme's backgroundColor.
                         borderColor: Colors.brown,
                         borderWidth: 5.0,
                         borderRadius: 12.0,
@@ -236,8 +242,8 @@ class _HomeState extends State<Home> {
                       radius: 130,
                       lineWidth: 30,
                       percent: 0.4,
-                      progressColor: Colors.orange,
-                      backgroundColor: Colors.deepOrange.shade100,
+                      progressColor: Colors.amber,
+                      backgroundColor: Colors.amber.shade100,
                       circularStrokeCap: CircularStrokeCap.round,
                       center: const Text(
                         '4 months left',
