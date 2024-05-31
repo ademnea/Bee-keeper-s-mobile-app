@@ -135,10 +135,10 @@ class _TabViewState extends State<TabView> {
                                     child: Temperature(
                                         hiveId: widget.hiveId,
                                         token: widget.token)),
-                                Center(
-                                    child: Humidity(
-                                        hiveId: widget.hiveId,
-                                        token: widget.token)),
+                                // Center(
+                                //     child: Humidity(
+                                //         hiveId: widget.hiveId,
+                                //         token: widget.token)),
                                 Center(child: Mediamenu(hiveId: widget.hiveId,
                                         token: widget.token)),
                               ],
