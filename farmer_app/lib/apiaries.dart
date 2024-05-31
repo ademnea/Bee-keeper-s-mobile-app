@@ -4,6 +4,7 @@ import 'package:farmer_app/hives.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class Apiaries extends StatefulWidget {
   final String token;
@@ -74,89 +75,105 @@ class _ApiariesState extends State<Apiaries> {
           farms = data.map((farm) => Farm.fromJson(farm)).toList();
         });
       } else {
-        print('Failed to load farms: ${response.reasonPhrase}');
+        //print('Failed to load farms: ${response.reasonPhrase}');
       }
     } catch (error) {
-      print('Error fetching Apiary data: $error');
+      //print('Error fetching Apiary data: $error');
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    //reload the page data.
+    // initState();
+    return await Future.delayed(const Duration(seconds: 1));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 140,
-                    width: 2000,
-                    child: Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.orange.withOpacity(0.8),
-                                Colors.orange.withOpacity(0.6),
-                                Colors.orange.withOpacity(0.4),
-                                Colors.orange.withOpacity(0.2),
-                                Colors.orange.withOpacity(0.1),
-                                Colors.transparent,
+      // backgroundColor: Colors.orange[100],
+      body: LiquidPullToRefresh(
+        onRefresh: _handleRefresh,
+        color: Colors.orange,
+        height: 150,
+        animSpeedFactor: 2,
+        showChildOpacityTransition: true,
+        child: ListView(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 125,
+                      width: 2000,
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.orange.withOpacity(0.8),
+                                  Colors.orange.withOpacity(0.6),
+                                  Colors.orange.withOpacity(0.4),
+                                  Colors.orange.withOpacity(0.2),
+                                  Colors.orange.withOpacity(0.1),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  child: Image.asset(
+                                    'lib/images/log-1.png',
+                                    height: 80,
+                                    width: 80,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 100,
+                                ),
+                                const Text(
+                                  'Apiaries',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                                const Spacer(),
+                                const Icon(
+                                  Icons.person,
+                                  color: Color.fromARGB(255, 206, 109, 40),
+                                  size: 65,
+                                ),
                               ],
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 50.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                child: Image.asset(
-                                  'lib/images/log-1.png',
-                                  height: 80,
-                                  width: 80,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 100,
-                              ),
-                              const Text(
-                                'Apiaries',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
-                              ),
-                              const Spacer(),
-                              const Icon(
-                                Icons.person,
-                                color: Color.fromARGB(255, 206, 109, 40),
-                                size: 65,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
 
-                  // ListView.builder to dynamically create cards
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: farms.length,
-                    itemBuilder: (context, index) {
-                      return buildFarmCard(farms[index]);
-                    },
-                  ),
-                ],
+                    // ListView.builder to dynamically create cards
+
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: farms.length,
+                      itemBuilder: (context, index) {
+                        return buildFarmCard(farms[index]);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -215,9 +232,9 @@ class _ApiariesState extends State<Apiaries> {
                               child: Text(
                                 farm.name,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.normal,
                                     fontSize: 17,
-                                    color: Colors.black),
+                                    color: Colors.white),
                               ),
                             ),
                           ),
@@ -242,7 +259,7 @@ class _ApiariesState extends State<Apiaries> {
                               'view hives',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.normal,
+                                fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
                             ),
@@ -251,107 +268,52 @@ class _ApiariesState extends State<Apiaries> {
                       ),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.orange[700],
-                              ),
-                              Text(
-                                farm.address,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(0.0),
-                          child: SizedBox.shrink(),
-                        ),
-                      ),
-                      const TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(0.0),
-                          child: SizedBox.shrink(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.developer_board_outlined,
-                                color: Colors.orange[700],
-                              ),
-                              const Text(
-                                'Device:',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 4),
-                              child: const Text(
-                                'Connected',
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const TableCell(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: SizedBox.shrink(),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Location:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      farm.district + ', ' + farm.address,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 22, bottom: 20),
                 child: Row(
                   children: [
                     Icon(
-                      Icons.hexagon,
+                      Icons.thermostat,
                       color: Colors.orange[700],
                     ),
                     const Text(
-                      'Recent Harvests',
+                      'Average Temperature:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     const Text(
-                      '12/04/24  |  12kg',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      ' 25°C',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ],
                 ),
