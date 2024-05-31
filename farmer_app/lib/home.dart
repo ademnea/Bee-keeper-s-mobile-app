@@ -1,5 +1,7 @@
 import 'package:farmer_app/components/bar_graph.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:farmer_app/Services/notifi_service.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
@@ -11,6 +13,54 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  //................................................
+//lets implement the notification.
+  Timer? _timer;
+  void startPeriodicTemperatureCheck(int hiveId) {
+    // Check weight immediately on start
+    _checkTemperature(hiveId);
+
+    _timer = Timer.periodic(Duration(minutes: 10), (timer) {
+      _checkTemperature(hiveId);
+    });
+  }
+
+  Future<void> _checkTemperature(int hiveId) async {
+    try {
+      // Map<String, dynamic> hiveData = await fetchHiveDetailsAndTemperature(hiveId);
+      // String hiveName = hiveData['hiveName'];
+      //double temperature = hiveData['temperature'];
+      String hiveName = 'Hive 1';
+      double honeypercent = 50;
+      if (honeypercent > 40) {
+        NotificationService().showNotification(
+          title: hiveName,
+          body: 'Hive almost full! Please check this hive.',
+        );
+      } else {
+        // print('hive not full');
+      }
+    } catch (error) {
+      print('Error fetching temperature: $error');
+    }
+  }
+
+  //lets set state and keep checking for notificatons.
+  @override
+  void initState() {
+    super.initState();
+    startPeriodicTemperatureCheck(
+        1); // Replace 1 with the actual hive ID you want to monitor
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+  //notification functions end here.
+//..........................................................
+
   //list of the data.
   List<double> weeklySummary = [
     80.40,

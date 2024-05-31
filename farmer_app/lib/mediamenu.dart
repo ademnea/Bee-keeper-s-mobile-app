@@ -19,7 +19,7 @@ class _MediamenuState extends State<Mediamenu> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            'Choose Hive x Media',
+            'Choose Hive ' + widget.hiveId.toString() + ' Media',
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
