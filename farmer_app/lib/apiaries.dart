@@ -213,7 +213,8 @@ class _ApiariesState extends State<Apiaries> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.black),
+                                    color: Colors.black,
+                                    fontFamily: "Sans"),
                               ),
                             ),
                           ),
@@ -234,6 +235,7 @@ class _ApiariesState extends State<Apiaries> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 17,
+                                    fontFamily: "Sans",
                                     color: Colors.white),
                               ),
                             ),
@@ -261,6 +263,7 @@ class _ApiariesState extends State<Apiaries> {
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
+                                fontFamily: "Sans",
                               ),
                             ),
                           ),
@@ -282,6 +285,8 @@ class _ApiariesState extends State<Apiaries> {
                       'Location:',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
                       ),
                     ),
                     const SizedBox(
@@ -290,7 +295,11 @@ class _ApiariesState extends State<Apiaries> {
                     Text(
                       farm.district + ', ' + farm.address,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                   ],
                 ),
@@ -305,7 +314,11 @@ class _ApiariesState extends State<Apiaries> {
                     ),
                     const Text(
                       'Average Temperature:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
@@ -313,7 +326,11 @@ class _ApiariesState extends State<Apiaries> {
                     const Text(
                       ' 25°C',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                   ],
                 ),

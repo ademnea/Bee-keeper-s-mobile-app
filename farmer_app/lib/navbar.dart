@@ -1,8 +1,6 @@
 import 'package:farmer_app/Notifications.dart';
-import 'package:farmer_app/getstarted.dart';
-import 'package:farmer_app/hives.dart';
-import 'package:farmer_app/hivedetails.dart';
 import 'package:farmer_app/apiaries.dart';
+import 'package:farmer_app/login.dart';
 import 'package:farmer_app/records.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -10,15 +8,24 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import './home.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: Home(),
-    debugShowCheckedModeBanner: false,
-  ));
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: login(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class navbar extends StatefulWidget {
-  final String token;
-  const navbar({Key? key, required this.token}) : super(key: key);
+  String token;
+  navbar({Key? key, required this.token}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,7 +39,9 @@ class _navbarState extends State<navbar> {
   void initState() {
     super.initState();
     _widgetOptions = <Widget>[
-      const Home(),
+      Home(
+        token: widget.token,
+      ),
       Apiaries(
         token: widget.token,
       ),

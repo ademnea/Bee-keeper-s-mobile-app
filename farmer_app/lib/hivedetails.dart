@@ -120,6 +120,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   'Hive ${widget.hiveId}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: "Sans",
                                       fontSize: 20),
                                 ),
                                 const Spacer(),
@@ -171,7 +172,8 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 const Text(
                                   'Device:',
                                   style: TextStyle(
-                                    //fontSize: 18,
+                                    fontSize: 16,
+                                    fontFamily: "Sans",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -182,6 +184,8 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   'Connected',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: "Sans",
                                   ),
                                 ),
                                 const Spacer(),
@@ -200,9 +204,12 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   child: Text(
                                     'Check Monitor',
                                     style: TextStyle(
-                                        color: Colors.blue[900],
-                                        decoration: TextDecoration.underline,
-                                        fontSize: 15),
+                                      color: Colors.blue[800],
+                                      decoration: TextDecoration.underline,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      fontFamily: "Sans",
+                                    ),
                                   ),
                                 ),
                               ],
@@ -234,9 +241,10 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   child: const Text(
                                     'Hive Notifications',
                                     style: TextStyle(
-                                        color: Colors.white,
-                                        // decoration: TextDecoration.underline,
-                                        fontSize: 17),
+                                      color: Colors.white,
+                                      fontFamily: "Sans",
+                                      fontSize: 17,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -248,16 +256,9 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 children: [
                                   //notifications
                                   NotificationComponent(
-                                    date: 'November 3, 2023',
-                                    title: 'Device Malfunction',
-                                    content:
-                                        'The device has not communicated in 5 days, please check this hive.',
-                                  ),
-                                  NotificationComponent(
-                                    date: 'November 3, 2023',
-                                    title: 'Device Malfunction',
-                                    content:
-                                        'The device has not communicated in 5 days, please check this hive.',
+                                    date: 'June 3, 2024',
+                                    title: 'Normal Condition',
+                                    content: 'All looks good with this hive.',
                                   ),
                                 ],
                               ),

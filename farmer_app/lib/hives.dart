@@ -140,6 +140,7 @@ class _HivesState extends State<Hives> {
                                     'Prototype Apiary Hives',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
+                                        fontFamily: "Sans",
                                         fontSize: 20),
                                   ),
                                   const Spacer(),
@@ -205,6 +206,8 @@ class _HivesState extends State<Hives> {
                       'Hive Name: ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
                       ),
                     ),
                     const SizedBox(
@@ -215,6 +218,7 @@ class _HivesState extends State<Hives> {
                       style: const TextStyle(
                         fontWeight: FontWeight.normal,
                         fontSize: 17,
+                        fontFamily: "Sans",
                         color: Colors.white,
                       ),
                     ),
@@ -238,6 +242,7 @@ class _HivesState extends State<Hives> {
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
+                            fontFamily: "Sans",
                             fontWeight: FontWeight.bold,
                           ),
                         ))
@@ -254,7 +259,11 @@ class _HivesState extends State<Hives> {
                     ),
                     const Text(
                       'Device:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
@@ -262,7 +271,11 @@ class _HivesState extends State<Hives> {
                     const Text(
                       ' Connected ',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                   ],
                 ),
@@ -277,7 +290,11 @@ class _HivesState extends State<Hives> {
                     ),
                     const Text(
                       'Temperature:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
@@ -285,7 +302,11 @@ class _HivesState extends State<Hives> {
                     const Text(
                       ' 25°C',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                   ],
                 ),
@@ -300,7 +321,11 @@ class _HivesState extends State<Hives> {
                     ),
                     const Text(
                       'Weight:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
@@ -308,15 +333,23 @@ class _HivesState extends State<Hives> {
                     const Text(
                       ' 23Kg',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
                     ),
                     const Spacer(),
                     const Padding(
                       padding: EdgeInsets.only(right: 20),
                       child: Text(
-                        ' Colonized',
+                        ' Colonized', 
                         style: TextStyle(
-                            fontWeight: FontWeight.normal, color: Colors.white),
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
                       ),
                     ),
                   ],
