@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:farmer_app/hives.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
@@ -21,14 +21,20 @@ class Farm {
   final String name;
   final String district;
   final String address;
-  final String createdAt;
-  final String updatedAt;
+  final double? average_temperature;
+  final double? average_weight;
+  final double? honeypercent;
+  final String? createdAt;
+  final String? updatedAt;
 
   Farm({
     required this.id,
     required this.ownerId,
     required this.name,
     required this.district,
+    required this.average_temperature,
+    required this.average_weight,
+    required this.honeypercent,
     required this.address,
     required this.createdAt,
     required this.updatedAt,
@@ -41,6 +47,9 @@ class Farm {
       name: json['name'],
       district: json['district'],
       address: json['address'],
+      average_temperature: json['average_temperature']?.toDouble(),
+      average_weight: json['average_weight']?.toDouble(),
+      honeypercent: json['average_honey_percentage']?.toDouble(),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
@@ -58,11 +67,11 @@ class _ApiariesState extends State<Apiaries> {
 
   Future<void> getApiaries() async {
     try {
-      String send_token = "Bearer " + widget.token;
+      String sendToken = "Bearer ${widget.token}";
 
       var headers = {
         'Accept': 'application/json',
-        'Authorization': send_token,
+        'Authorization': sendToken,
       };
       var response = await http.get(
         Uri.parse('https://www.ademnea.net/api/v1/farms/'),
@@ -71,14 +80,18 @@ class _ApiariesState extends State<Apiaries> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
+
+        print('.........................................');
+        print(data);
+        print('.........................................');
         setState(() {
           farms = data.map((farm) => Farm.fromJson(farm)).toList();
         });
       } else {
-        //print('Failed to load farms: ${response.reasonPhrase}');
+        print('Failed to load farms: ${response.reasonPhrase}');
       }
     } catch (error) {
-      //print('Error fetching Apiary data: $error');
+      print('Error fetching Apiary data: $error');
     }
   }
 
@@ -305,7 +318,7 @@ class _ApiariesState extends State<Apiaries> {
                         width: 10,
                       ),
                       Text(
-                        farm.district + ', ' + farm.address,
+                        '${farm.district}, ${farm.address}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -317,7 +330,7 @@ class _ApiariesState extends State<Apiaries> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 20),
+                  padding: const EdgeInsets.only(left: 22, bottom: 10),
                   child: Row(
                     children: [
                       Icon(
@@ -335,9 +348,42 @@ class _ApiariesState extends State<Apiaries> {
                       const SizedBox(
                         width: 10,
                       ),
+                      Text(
+                        '${farm.average_temperature}°C',
+                        // '26.3°C',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 22, bottom: 20),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.scale_rounded,
+                        color: Colors.orange[700],
+                      ),
                       const Text(
-                        ' 25°C',
+                        'Average Weight:',
                         style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        '${farm.average_weight} Kg',
+                        //'23 Kg',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 16,

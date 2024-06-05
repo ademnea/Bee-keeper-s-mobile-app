@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
           isLoading = false;
         });
 
-        print(data);
+        //print(data);
       } else {
         setState(() {
           isLoading = false;
