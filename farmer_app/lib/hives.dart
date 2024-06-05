@@ -333,7 +333,7 @@ class _HivesState extends State<Hives> {
                       ),
                       Text(
                         hive.temperature != null
-                            ? '${hive.temperature}°C'
+                            ? '${hive.temperature?.toStringAsFixed(2)}°C'
                             : '--',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -365,7 +365,9 @@ class _HivesState extends State<Hives> {
                         width: 10,
                       ),
                       Text(
-                        hive.temperature != null ? '${hive.weight}Kg' : '--',
+                        hive.temperature != null
+                            ? '${hive.weight?.toStringAsFixed(1)}Kg'
+                            : '--',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,

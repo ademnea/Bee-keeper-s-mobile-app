@@ -346,8 +346,9 @@ class _ApiariesState extends State<Apiaries> {
                         width: 10,
                       ),
                       Text(
-                        '${farm.average_temperature?.toStringAsFixed(2)}°C',
-                        // '26.3°C',
+                        farm.average_temperature != null
+                            ? '${farm.average_temperature?.toStringAsFixed(2)}°C'
+                            : '--',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -378,8 +379,9 @@ class _ApiariesState extends State<Apiaries> {
                         width: 10,
                       ),
                       Text(
-                        '${farm.average_weight?.toStringAsFixed(2)} Kg',
-                        //'23 Kg',
+                        farm.average_weight != null
+                            ? '${farm.average_weight?.toStringAsFixed(1)}Kg'
+                            : '--',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
