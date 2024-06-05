@@ -19,22 +19,33 @@ class Home extends StatefulWidget {
 class HomeData {
   final int farms;
   final int hives;
+  //about the honey percentage
+  // final double average_weight;
+  // final double average_honey_percentage;
+  // final String apiaryName;
 
   HomeData({
     required this.farms,
     required this.hives,
+    // required this.apiaryName,
+    // required this.average_honey_percentage,
+    // required this.average_weight,
   });
 
   factory HomeData.fromJson(Map<String, dynamic> json) {
     return HomeData(
       farms: json['total_farms'],
       hives: json['total_hives'],
+      // apiaryName: json['most_productive_farm']['name'],
+      // average_honey_percentage: json['average_honey_percentage'],
+      // average_weight: json['average_weight'],
     );
   }
 }
 
 class _HomeState extends State<Home> {
   HomeData? totalsdata;
+  HomeData? productivityData;
   bool isLoading = true;
 
   @override
@@ -45,6 +56,10 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> getData() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       String sendToken = "Bearer ${widget.token}";
 
@@ -52,31 +67,46 @@ class _HomeState extends State<Home> {
         'Accept': 'application/json',
         'Authorization': sendToken,
       };
-      var response = await http.get(
+
+      //response for the count.
+      var countresponse = await http.get(
         Uri.parse('https://www.ademnea.net/api/v1/farms/count'),
         headers: headers,
       );
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
+      //response for the productivity.
+      var productiveresponse = await http.get(
+        Uri.parse('https://www.ademnea.net/api/v1/farms/most-productive'),
+        headers: headers,
+      );
 
-        setState(() {
-          totalsdata = HomeData.fromJson(data);
-          isLoading = false;
-        });
+      //response for the count
+      Map<String, dynamic> countdata = jsonDecode(countresponse.body);
 
-        //print(data);
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        print('Failed to load farms: ${response.reasonPhrase}');
-      }
+      // print('...........................');
+      // print(countdata);
+      // print('...........................');
+
+      //most productive farm response.
+      Map<String, dynamic> productivedata = jsonDecode(productiveresponse.body);
+
+      // print('...........................');
+      // print(productivedata);
+      // print('...........................');
+
+      setState(() {
+        totalsdata = HomeData.fromJson(countdata);
+        productivityData = HomeData.fromJson(productivedata);
+
+        isLoading = false;
+      });
+
+      //print(data);
     } catch (error) {
       setState(() {
         isLoading = false;
       });
-      print('Error fetching Apiary data: $error');
+      // print('Error fetching Apiary data: $error');
     }
   }
 
@@ -255,6 +285,7 @@ class _HomeState extends State<Home> {
                           height: 250,
                           width: 300,
                           child: LiquidLinearProgressIndicator(
+                            // value: productivityData?.average_honey_percentage ?? 0,
                             value: 0.65,
                             valueColor:
                                 const AlwaysStoppedAnimation(Colors.amber),
@@ -268,7 +299,8 @@ class _HomeState extends State<Home> {
                                 // Define what happens when the button is pressed
                               },
                               child: const Text(
-                                "Mubende apiary at 65%",
+                                "65",
+                                // "${productivityData?.apiaryName} apiary\n${productivityData?.average_honey_percentage ?? 0}%\n${productivityData?.average_weight ?? 0}Kg",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,

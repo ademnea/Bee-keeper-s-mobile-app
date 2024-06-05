@@ -81,17 +81,14 @@ class _ApiariesState extends State<Apiaries> {
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
 
-        print('.........................................');
-        print(data);
-        print('.........................................');
         setState(() {
           farms = data.map((farm) => Farm.fromJson(farm)).toList();
         });
       } else {
-        print('Failed to load farms: ${response.reasonPhrase}');
+        //  print('Failed to load farms: ${response.reasonPhrase}');
       }
     } catch (error) {
-      print('Error fetching Apiary data: $error');
+      //  print('Error fetching Apiary data: $error');
     }
   }
 
