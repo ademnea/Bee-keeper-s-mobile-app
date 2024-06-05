@@ -41,6 +41,7 @@ class _navbarState extends State<navbar> {
     _widgetOptions = <Widget>[
       Home(
         token: widget.token,
+        notify: false,
       ),
       Apiaries(
         token: widget.token,

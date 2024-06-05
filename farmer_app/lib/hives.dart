@@ -22,8 +22,8 @@ class Hive {
   final int farmId;
   final String? createdAt;
   final String? updatedAt;
-  final double weight;
-  final double temperature;
+  final double? weight;
+  final double? temperature;
   final bool isConnected;
   final bool isColonized;
 
@@ -332,7 +332,9 @@ class _HivesState extends State<Hives> {
                         width: 10,
                       ),
                       Text(
-                        '${hive.temperature}°C',
+                        hive.temperature != null
+                            ? '${hive.temperature}°C'
+                            : '--',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -363,7 +365,7 @@ class _HivesState extends State<Hives> {
                         width: 10,
                       ),
                       Text(
-                        '${hive.weight}Kg',
+                        hive.temperature != null ? '${hive.weight}Kg' : '--',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,

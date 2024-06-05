@@ -9,8 +9,10 @@ import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
 class Home extends StatefulWidget {
   final String token;
+  final bool notify;
 
-  const Home({Key? key, required this.token}) : super(key: key);
+  const Home({Key? key, required this.token, required this.notify})
+      : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -19,33 +21,39 @@ class Home extends StatefulWidget {
 class HomeData {
   final int farms;
   final int hives;
-  //about the honey percentage
-  // final double average_weight;
-  // final double average_honey_percentage;
-  // final String apiaryName;
+  final String apiaryName;
+  final double averageHoneyPercentage;
+  final double averageWeight;
+  final double daysToEndSeason;
 
   HomeData({
     required this.farms,
     required this.hives,
-    // required this.apiaryName,
-    // required this.average_honey_percentage,
-    // required this.average_weight,
+    required this.apiaryName,
+    required this.averageHoneyPercentage,
+    required this.averageWeight,
+    required this.daysToEndSeason,
   });
 
-  factory HomeData.fromJson(Map<String, dynamic> json) {
+  factory HomeData.fromJson(
+    Map<String, dynamic> countJson,
+    Map<String, dynamic> productiveJson,
+    Map<String, dynamic> seasonJson,
+  ) {
     return HomeData(
-      farms: json['total_farms'],
-      hives: json['total_hives'],
-      // apiaryName: json['most_productive_farm']['name'],
-      // average_honey_percentage: json['average_honey_percentage'],
-      // average_weight: json['average_weight'],
+      farms: countJson['total_farms'],
+      hives: countJson['total_hives'],
+      apiaryName: productiveJson['most_productive_farm']['name'],
+      averageHoneyPercentage:
+          productiveJson['average_honey_percentage'].toDouble(),
+      averageWeight: productiveJson['average_weight'].toDouble(),
+      daysToEndSeason: seasonJson['time_until_harvest']['days'].toDouble(),
     );
   }
 }
 
 class _HomeState extends State<Home> {
-  HomeData? totalsdata;
-  HomeData? productivityData;
+  HomeData? homeData;
   bool isLoading = true;
 
   @override
@@ -68,73 +76,77 @@ class _HomeState extends State<Home> {
         'Authorization': sendToken,
       };
 
-      //response for the count.
-      var countresponse = await http.get(
-        Uri.parse('https://www.ademnea.net/api/v1/farms/count'),
-        headers: headers,
-      );
+      // Concurrent requests
+      var responses = await Future.wait([
+        http.get(Uri.parse('https://www.ademnea.net/api/v1/farms/count'),
+            headers: headers),
+        http.get(
+            Uri.parse('https://www.ademnea.net/api/v1/farms/most-productive'),
+            headers: headers),
+        http.get(
+            Uri.parse(
+                'https://www.ademnea.net/api/v1/farms/time-until-harvest'),
+            headers: headers),
+      ]);
 
-      //response for the productivity.
-      var productiveresponse = await http.get(
-        Uri.parse('https://www.ademnea.net/api/v1/farms/most-productive'),
-        headers: headers,
-      );
+      if (responses[0].statusCode == 200 &&
+          responses[1].statusCode == 200 &&
+          responses[2].statusCode == 200) {
+        Map<String, dynamic> countData = jsonDecode(responses[0].body);
+        Map<String, dynamic> productiveData = jsonDecode(responses[1].body);
+        Map<String, dynamic> seasonData = jsonDecode(responses[2].body);
 
-      //response for the count
-      Map<String, dynamic> countdata = jsonDecode(countresponse.body);
+        //print(seasonData);
+        //print(productiveData);
 
-      // print('...........................');
-      // print(countdata);
-      // print('...........................');
-
-      //most productive farm response.
-      Map<String, dynamic> productivedata = jsonDecode(productiveresponse.body);
-
-      // print('...........................');
-      // print(productivedata);
-      // print('...........................');
-
-      setState(() {
-        totalsdata = HomeData.fromJson(countdata);
-        productivityData = HomeData.fromJson(productivedata);
-
-        isLoading = false;
-      });
-
-      //print(data);
+        setState(() {
+          homeData = HomeData.fromJson(countData, productiveData, seasonData);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        // Handle error
+      }
     } catch (error) {
       setState(() {
         isLoading = false;
       });
-      // print('Error fetching Apiary data: $error');
+      // Handle error
     }
   }
 
   Timer? _timer;
 
+  // Add this variable
+
   void startPeriodicTemperatureCheck(int hiveId) {
     _checkTemperature(hiveId);
-    _timer = Timer.periodic(const Duration(minutes: 10), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
       _checkTemperature(hiveId);
     });
   }
 
   Future<void> _checkTemperature(int hiveId) async {
     try {
-      String hiveName = 'Hive 1';
-      double honeypercent = 50;
-      if (honeypercent > 40) {
+      bool shouldTriggerNotification = widget.notify;
+      String hiveName = 'Honey harvest season';
+      double daystoseason = homeData?.daysToEndSeason ?? 0.0;
+
+      if (daystoseason <= 10 && shouldTriggerNotification) {
         NotificationService().showNotification(
           title: hiveName,
-          body: 'Hive almost full! Please check this hive.',
+          body:
+              'The Honey harvest season is here, check your hives and get the honey.',
         );
+        // Set the flag to true once notification is triggered
       }
     } catch (error) {
       print('Error fetching temperature: $error');
     }
   }
 
-  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -223,7 +235,7 @@ class _HomeState extends State<Home> {
                                                 Color.fromARGB(255, 63, 59, 59),
                                           ),
                                           Text(
-                                            'Apiaries: ${totalsdata?.farms ?? 0}',
+                                            'Apiaries: ${homeData?.farms ?? 0}',
                                             style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -252,7 +264,7 @@ class _HomeState extends State<Home> {
                                                 Color.fromARGB(255, 63, 59, 59),
                                           ),
                                           Text(
-                                            'Hives: ${totalsdata?.hives ?? 0}',
+                                            'Hives: ${homeData?.hives ?? 0}',
                                             style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -285,8 +297,8 @@ class _HomeState extends State<Home> {
                           height: 250,
                           width: 300,
                           child: LiquidLinearProgressIndicator(
-                            // value: productivityData?.average_honey_percentage ?? 0,
-                            value: 0.65,
+                            //value: 0.64,
+                            value: homeData?.averageHoneyPercentage ?? 0,
                             valueColor:
                                 const AlwaysStoppedAnimation(Colors.amber),
                             backgroundColor: Colors.amber[100]!,
@@ -298,10 +310,10 @@ class _HomeState extends State<Home> {
                               onPressed: () {
                                 // Define what happens when the button is pressed
                               },
-                              child: const Text(
-                                "65",
-                                // "${productivityData?.apiaryName} apiary\n${productivityData?.average_honey_percentage ?? 0}%\n${productivityData?.average_weight ?? 0}Kg",
-                                style: TextStyle(
+                              child: Text(
+                                //"dhdashbn",
+                                "${homeData?.apiaryName ?? ''} apiary\n${homeData?.averageHoneyPercentage ?? 0}%\n${homeData?.averageWeight ?? 0}Kg",
+                                style: const TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                   fontFamily: "Sans",
@@ -352,21 +364,26 @@ class _HomeState extends State<Home> {
                           animationDuration: 1000,
                           radius: 130,
                           lineWidth: 30,
-                          percent: 0.4,
-                          progressColor: Colors.amber,
-                          backgroundColor: Colors.amber.shade100,
+                          percent: 0.2,
+                          progressColor:
+                              const Color.fromARGB(255, 206, 109, 40),
+                          backgroundColor:
+                              const Color.fromARGB(255, 255, 206, 175),
                           circularStrokeCap: CircularStrokeCap.round,
                           center: Text(
-                            "4 months left",
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Colors.brown.shade700,
+                            homeData?.daysToEndSeason != null &&
+                                    homeData!.daysToEndSeason <= 10
+                                ? "In Season"
+                                : "${homeData?.daysToEndSeason?.toStringAsFixed(0)} days \nto \nharvest season",
+                            style: const TextStyle(
+                              fontSize: 20,
                               fontFamily: "Sans",
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
