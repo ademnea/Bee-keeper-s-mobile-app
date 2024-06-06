@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:http/http.dart' as http;
 import 'package:line_icons/line_icons.dart';
-
-import 'components/graphs.dart';
 
 class Temperature extends StatefulWidget {
   final int hiveId;
@@ -38,10 +37,10 @@ class _TemperatureState extends State<Temperature> {
       initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
     );
 
-    if (picked != null && picked.start != null && picked.end != null) {
+    if (picked != null) {
       setState(() {
-        _startDate = picked.start!;
-        _endDate = picked.end!;
+        _startDate = picked.start;
+        _endDate = picked.end;
       });
 
       getTempData(widget.hiveId, _startDate, _endDate);
@@ -57,10 +56,7 @@ class _TemperatureState extends State<Temperature> {
       };
 
       String formattedStartDate = "${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}";
-      print("Start Date: $formattedStartDate");
-
       String formattedEndDate = "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}";
-      print("End Date: $formattedEndDate");
 
       var request = http.Request(
         'GET',
@@ -77,25 +73,24 @@ class _TemperatureState extends State<Temperature> {
         List<double?> newExteriorTemperatures = [];
         for (var dataPoint in jsonData['data']) {
           newDates.add(DateTime.parse(dataPoint['date']));
-          if (dataPoint['interiorTemperature'] != null) {
-            newInteriorTemperatures.add(double.tryParse(dataPoint['interiorTemperature']));
-          } else {
-            newInteriorTemperatures.add(0);
+          double? interiorTemp = dataPoint['interiorTemperature'] != null ? double.tryParse(dataPoint['interiorTemperature'].toString()) : null;
+          double? exteriorTemp = dataPoint['exteriorTemperature'] != null ? double.tryParse(dataPoint['exteriorTemperature'].toString()) : null;
+
+          if (interiorTemp == 0) {
+            interiorTemp = null;
           }
-          if (dataPoint['exteriorTemperature'] != null) {
-            newExteriorTemperatures.add(double.tryParse(dataPoint['exteriorTemperature']));
-          } else {
-            newExteriorTemperatures.add(0);
+          if (exteriorTemp == 0) {
+            exteriorTemp = null;
           }
+
+          newInteriorTemperatures.add(interiorTemp);
+          newExteriorTemperatures.add(exteriorTemp);
         }
 
         setState(() {
           dates = newDates;
-          print("Dates: $dates");
           interiorTemperatures = newInteriorTemperatures;
-          print("Interior: $interiorTemperatures");
           exteriorTemperatures = newExteriorTemperatures;
-          print("Exterior: $exteriorTemperatures");
         });
       } else {
         print(response.reasonPhrase);
@@ -116,6 +111,7 @@ class _TemperatureState extends State<Temperature> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -156,23 +152,69 @@ class _TemperatureState extends State<Temperature> {
                   ),
                 ],
               ),
-              SizedBox(
-                width: double.infinity,
-                height: screenHeight * 0.5,
-                child: Graphs(
-                  xValues: dates,
-                  yValues1: interiorTemperatures.where((temp) => temp != null).cast<double>().toList(),
-                  yValues2: exteriorTemperatures.where((temp) => temp != null).cast<double>().toList(),
-                  xAxisLabel: 'Time in hours',
-                  yAxisLabel: 'Temperature (°C)',
-                  xAxisSpacing: Duration(days: 1),
-                  yAxisSpacing: 3,
-                  title: 'Hive Temperature',
-                  minY: 10.0,
-                  maxY: 45.0,
+              Container(
+                height: 300,
+                width: screenWidth * 0.9,
+                child: Echarts(
+                    option: '''
+    {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          label: {
+            backgroundColor: '#6a7985'
+          }
+        }
+      },
+      legend: {
+        data: ['Exterior', 'Interior']
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ${jsonEncode(dates.map((date) => date.toString()).toList())},
+        axisLabel: {
+          formatter: function (value) {
+            var date = new Date(value);
+            return date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0') + ' ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
+          }
+        }
+      },
+      yAxis: {
+        type: 'value',
+        min: 15,
+        max: 35,
+        interval: 3,
+        axisLabel: {
+          formatter: '{value}°C'
+        }
+      },
+      series: [
+        {
+          name: 'Exterior',
+          type: 'line',
+          data: ${jsonEncode(exteriorTemperatures)},
+          itemStyle: {
+            color: 'blue'
+          },
+          connectNulls: false
+        },
+        {
+          name: 'Interior',
+          type: 'line',
+          data: ${jsonEncode(interiorTemperatures)},
+          itemStyle: {
+            color: 'green'
+          },
+          connectNulls: false
+        }
+      ]
+    }
+  '''
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -185,15 +227,17 @@ class _TemperatureState extends State<Temperature> {
                       ),
                       SizedBox(height: 8),
                       Text('Interior Temperature Stats:'),
-                      Text('Highest: ${interiorTemperatures.isNotEmpty ? interiorTemperatures.reduce((a, b) => a! > b! ? a : b)! : ''} °C'),
+                      Text('Highest: ${interiorTemperatures.where((temp) => temp != null).isNotEmpty ? interiorTemperatures.where((temp) => temp != null).reduce((a, b) => a! > b! ? a : b)! : ''} °C'),
                       Text('Lowest: ${_getLowestTemperature(interiorTemperatures) ?? ''} °C'),
                       Text('Exterior Temperature Stats:'),
-                      Text('Highest: ${exteriorTemperatures.isNotEmpty ? exteriorTemperatures.reduce((a, b) => a! > b! ? a : b)! : ''} °C'),
+                      Text('Highest: ${exteriorTemperatures.where((temp) => temp != null).isNotEmpty ? exteriorTemperatures.where((temp) => temp != null).reduce((a, b) => a! > b! ? a : b)! : ''} °C'),
                       Text('Lowest: ${_getLowestTemperature(exteriorTemperatures) ?? ''} °C'),
                     ],
                   ),
                 ),
               ),
+
+              const SizedBox(height: 16),
             ],
           ),
         ],
