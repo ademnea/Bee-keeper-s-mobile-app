@@ -1,6 +1,6 @@
-import 'package:farmer_app/components/imageslider.dart';
-import 'package:farmer_app/splashscreen.dart';
-import 'package:farmer_app/components/notificationbar.dart';
+import 'package:HPGM/components/imageslider.dart';
+import 'package:HPGM/splashscreen.dart';
+import 'package:HPGM/components/notificationbar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';

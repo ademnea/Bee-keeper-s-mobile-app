@@ -1,7 +1,7 @@
-import 'package:farmer_app/Notifications.dart';
-import 'package:farmer_app/apiaries.dart';
-import 'package:farmer_app/login.dart';
-import 'package:farmer_app/records.dart';
+import 'package:HPGM/Notifications.dart';
+import 'package:HPGM/apiaries.dart';
+import 'package:HPGM/login.dart';
+import 'package:HPGM/records.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';

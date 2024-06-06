@@ -1,9 +1,9 @@
-import 'package:farmer_app/components/bar_graph.dart';
+import 'package:HPGM/components/bar_graph.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:farmer_app/Services/notifi_service.dart';
+import 'package:HPGM/Services/notifi_service.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
@@ -311,8 +311,7 @@ class _HomeState extends State<Home> {
                                 // Define what happens when the button is pressed
                               },
                               child: Text(
-                                //"dhdashbn",
-                                "${homeData?.apiaryName ?? ''} apiary\n${homeData?.averageHoneyPercentage ?? 0}%\n${homeData?.averageWeight ?? 0}Kg",
+                                "${homeData?.apiaryName ?? '--'} apiary\n${homeData?.averageHoneyPercentage?.toStringAsFixed(1) ?? '--'}%\n${homeData?.averageWeight?.toStringAsFixed(1) ?? '--'}Kg",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,

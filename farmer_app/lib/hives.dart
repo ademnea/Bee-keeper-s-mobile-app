@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:farmer_app/hivedetails.dart';
+import 'package:HPGM/hivedetails.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'dart:convert';

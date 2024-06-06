@@ -1,4 +1,4 @@
-import 'package:farmer_app/components/individual_bar.dart';
+import 'package:HPGM/components/individual_bar.dart';
 
 class BarData {
   final double sunAmount;

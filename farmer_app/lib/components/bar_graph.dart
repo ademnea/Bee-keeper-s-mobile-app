@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:farmer_app/components/bar_data.dart';
+import 'package:HPGM/components/bar_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 

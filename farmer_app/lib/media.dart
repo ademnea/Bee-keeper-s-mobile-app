@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:line_icons/line_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:farmer_app/photo_view_page.dart';
+import 'package:HPGM/photo_view_page.dart';
 
 class Media extends StatefulWidget {
   final int hiveId;

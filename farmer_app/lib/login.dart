@@ -1,7 +1,7 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
-import 'package:farmer_app/navbar.dart';
-import 'package:farmer_app/splashscreen.dart';
+import 'package:HPGM/navbar.dart';
+import 'package:HPGM/splashscreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 

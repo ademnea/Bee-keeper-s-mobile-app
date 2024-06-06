@@ -1,5 +1,5 @@
-import 'package:farmer_app/hivevideos.dart';
-import 'package:farmer_app/media.dart';
+import 'package:HPGM/hivevideos.dart';
+import 'package:HPGM/media.dart';
 import 'package:flutter/material.dart';
 
 class Mediamenu extends StatefulWidget {

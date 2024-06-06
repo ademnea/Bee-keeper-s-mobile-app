@@ -1,6 +1,6 @@
-import 'package:farmer_app/components/hive_tips.dart';
+import 'package:HPGM/components/hive_tips.dart';
 import 'package:flutter/material.dart';
-import 'package:farmer_app/components/notificationbar.dart';
+import 'package:HPGM/components/notificationbar.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({super.key});
