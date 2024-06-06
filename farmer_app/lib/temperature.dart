@@ -19,53 +19,79 @@ class _TemperatureState extends State<Temperature> {
   List<DateTime> dates = [];
   List<double?> interiorTemperatures = [];
   List<double?> exteriorTemperatures = [];
+  late DateTime _startDate;
+  late DateTime _endDate;
 
   @override
   void initState() {
     super.initState();
-    getTempData(widget.hiveId);
+    _endDate = DateTime.now();
+    _startDate = _endDate.subtract(Duration(days: 6));
+    getTempData(widget.hiveId, _startDate, _endDate);
   }
 
-  Future<void> getTempData(int hiveId) async {
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
+    );
+
+    if (picked != null && picked.start != null && picked.end != null) {
+      setState(() {
+        _startDate = picked.start!;
+        _endDate = picked.end!;
+      });
+
+      getTempData(widget.hiveId, _startDate, _endDate);
+    }
+  }
+
+  Future<void> getTempData(int hiveId, DateTime startDate, DateTime endDate) async {
     try {
       String sendToken = "Bearer ${widget.token}";
-
       var headers = {
         'Accept': 'application/json',
         'Authorization': sendToken,
       };
 
-      DateTime today = DateTime.now();
-      DateTime yesterday = today.subtract(Duration(days: 1));
+      String formattedStartDate = "${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}";
+      print("Start Date: $formattedStartDate");
 
-      String startDate = "${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}";
-      String endDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+      String formattedEndDate = "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}";
+      print("End Date: $formattedEndDate");
 
       var request = http.Request(
-          'GET',
-          Uri.parse('https://www.ademnea.net/api/v1/hives/$hiveId/temperature/$startDate/$endDate'));
-
+        'GET',
+        Uri.parse('https://www.ademnea.net/api/v1/hives/$hiveId/temperature/$formattedStartDate/$formattedEndDate'),
+      );
       request.headers.addAll(headers);
 
       http.StreamedResponse response = await request.send();
-
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
-        //print(responseBody);
         Map<String, dynamic> jsonData = jsonDecode(responseBody);
-
         List<DateTime> newDates = [];
         List<double?> newInteriorTemperatures = [];
         List<double?> newExteriorTemperatures = [];
-
         for (var dataPoint in jsonData['data']) {
           newDates.add(DateTime.parse(dataPoint['date']));
-          newInteriorTemperatures.add(double.tryParse(dataPoint['interiorTemperature']));
-          newExteriorTemperatures.add(double.tryParse(dataPoint['exteriorTemperature']));
+          if (dataPoint['interiorTemperature'] != null) {
+            newInteriorTemperatures.add(double.tryParse(dataPoint['interiorTemperature']));
+          } else {
+            newInteriorTemperatures.add(0);
+          }
+          if (dataPoint['exteriorTemperature'] != null) {
+            newExteriorTemperatures.add(double.tryParse(dataPoint['exteriorTemperature']));
+          } else {
+            newExteriorTemperatures.add(0);
+          }
         }
 
         setState(() {
           dates = newDates;
+          print("Dates: $dates");
           interiorTemperatures = newInteriorTemperatures;
           print("Interior: $interiorTemperatures");
           exteriorTemperatures = newExteriorTemperatures;
@@ -79,6 +105,14 @@ class _TemperatureState extends State<Temperature> {
     }
   }
 
+  double? _getLowestTemperature(List<double?> temperatures) {
+    final filteredTemperatures = temperatures.where((temp) => temp != null && temp > 0).cast<double>().toList();
+    if (filteredTemperatures.isNotEmpty) {
+      return filteredTemperatures.reduce((a, b) => a < b ? a : b);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -88,9 +122,9 @@ class _TemperatureState extends State<Temperature> {
           Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8),
                 child: Text(
-                  'Hive temperature for the last 24 hours',
+                  'Hive temperature',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -100,19 +134,19 @@ class _TemperatureState extends State<Temperature> {
               Row(
                 children: [
                   TextButton.icon(
-                    onPressed: () async {
-                      getTempData(widget.hiveId);
-                    },
+                    onPressed: () async {},
                     icon: const Icon(
                       LineIcons.alternateCloudDownload,
                       color: Colors.white,
                       size: 30,
                     ),
-                    label: const Text(''),
+                    label: const Text('Download Data'),
                   ),
                   const Spacer(),
                   TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      _selectDate(context);
+                    },
                     icon: const Icon(
                       LineIcons.calendar,
                       color: Colors.white,
@@ -122,22 +156,20 @@ class _TemperatureState extends State<Temperature> {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.only(top: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: screenHeight * 0.5,
-                  child: Graphs(
-                    xValues: dates,
-                    yValues1: interiorTemperatures.where((temp) => temp != null).cast<double>().toList(),
-                    yValues2: exteriorTemperatures.where((temp) => temp != null).cast<double>().toList(),
-                    xAxisLabel: 'Time in hours',
-                    yAxisLabel: 'Temperature (°C)',
-                    xAxisSpacing: Duration(hours: 1),
-                    yAxisSpacing: 3,
-                    title: 'Hive Temperature',
-                  //  yValues: interiorTemperatures.where((temp) => temp != null).cast<double>().toList(),
-                  ),
+              SizedBox(
+                width: double.infinity,
+                height: screenHeight * 0.5,
+                child: Graphs(
+                  xValues: dates,
+                  yValues1: interiorTemperatures.where((temp) => temp != null).cast<double>().toList(),
+                  yValues2: exteriorTemperatures.where((temp) => temp != null).cast<double>().toList(),
+                  xAxisLabel: 'Time in hours',
+                  yAxisLabel: 'Temperature (°C)',
+                  xAxisSpacing: Duration(days: 1),
+                  yAxisSpacing: 3,
+                  title: 'Hive Temperature',
+                  minY: 10.0,
+                  maxY: 45.0,
                 ),
               ),
               SizedBox(height: 16),
@@ -154,12 +186,10 @@ class _TemperatureState extends State<Temperature> {
                       SizedBox(height: 8),
                       Text('Interior Temperature Stats:'),
                       Text('Highest: ${interiorTemperatures.isNotEmpty ? interiorTemperatures.reduce((a, b) => a! > b! ? a : b)! : ''} °C'),
-                      Text('Lowest: ${interiorTemperatures.isNotEmpty ? interiorTemperatures.reduce((a, b) => a! < b! ? a : b)! : ''} °C'),
-                      // You can calculate average similarly
+                      Text('Lowest: ${_getLowestTemperature(interiorTemperatures) ?? ''} °C'),
                       Text('Exterior Temperature Stats:'),
                       Text('Highest: ${exteriorTemperatures.isNotEmpty ? exteriorTemperatures.reduce((a, b) => a! > b! ? a : b)! : ''} °C'),
-                      Text('Lowest: ${exteriorTemperatures.isNotEmpty ? exteriorTemperatures.reduce((a, b) => a! < b! ? a : b)! : ''} °C'),
-                      // You can calculate average similarly
+                      Text('Lowest: ${_getLowestTemperature(exteriorTemperatures) ?? ''} °C'),
                     ],
                   ),
                 ),

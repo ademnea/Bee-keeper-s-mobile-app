@@ -1,7 +1,10 @@
 import 'package:farmer_app/splashscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+   dotenv.load(fileName: ".env");
   runApp(const MaterialApp(
     home: Splashscreen(),
     debugShowCheckedModeBanner: false,

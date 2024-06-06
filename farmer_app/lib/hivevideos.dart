@@ -21,17 +21,40 @@ class HiveVideos extends StatefulWidget {
 
 class _HiveVideosState extends State<HiveVideos> {
   List<String> videos = [];
+  late DateTime _startDate;
+  late DateTime _endDate;
 
   @override
   void initState() {
     super.initState();
-    fetchVideos(widget.hiveId);
+    _endDate = DateTime.now();
+    _startDate = _endDate.subtract(Duration(days: 6));
+    fetchVideos(widget.hiveId, _startDate, _endDate);
+
+  }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
+    );
+
+    if (picked != null && picked.start != null && picked.end != null) {
+      setState(() {
+        _startDate = picked.start!;
+        _endDate = picked.end!;
+        fetchVideos(widget.hiveId, _startDate, _endDate);
+      });
+
+    }
   }
 
-  Future<void> fetchVideos(int hiveId) async {
+  Future<void> fetchVideos(int hiveId, DateTime startDate, DateTime endDate) async {
     try {
       String sendToken = "Bearer ${widget.token}";
-
+      String formattedStartDate = "${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}";
+      String formattedEndDate = "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}";
       var headers = {
         'Accept': 'application/json',
         'Authorization': sendToken,
@@ -39,7 +62,7 @@ class _HiveVideosState extends State<HiveVideos> {
       var request = http.Request(
           'GET',
           Uri.parse(
-              'https://www.ademnea.net/api/v1/hives/$hiveId/videos/2023-12-12/2024-12-12'));
+              'https://www.ademnea.net/api/v1/hives/$hiveId/videos/$formattedStartDate/$formattedEndDate'));
 
       request.headers.addAll(headers);
 
@@ -155,18 +178,21 @@ class _HiveVideosState extends State<HiveVideos> {
                             children: [
                               TextButton.icon(
                                 onPressed: () async {
-                                  fetchVideos(widget.hiveId);
+                                 // fetchVideos(widget.hiveId);
                                 },
                                 icon: const Icon(
                                   LineIcons.alternateCloudDownload,
                                   color: Colors.white,
                                   size: 30,
                                 ),
-                                label: const Text(''),
+                                label: const Text('Download Data'),
                               ),
                               const Spacer(),
                               TextButton.icon(
-                                onPressed: () {},
+                                onPressed: ()
+                                {
+                                  _selectDate(context);
+                                },
                                 icon: const Icon(
                                   LineIcons.calendar,
                                   color: Colors.white,
