@@ -1,4 +1,3 @@
-import 'package:HPGM/components/bar_graph.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -25,6 +24,7 @@ class HomeData {
   final double averageHoneyPercentage;
   final double averageWeight;
   final double daysToEndSeason;
+  final double percentage_time_left;
 
   HomeData({
     required this.farms,
@@ -33,6 +33,7 @@ class HomeData {
     required this.averageHoneyPercentage,
     required this.averageWeight,
     required this.daysToEndSeason,
+    required this.percentage_time_left,
   });
 
   factory HomeData.fromJson(
@@ -48,6 +49,8 @@ class HomeData {
           productiveJson['average_honey_percentage'].toDouble(),
       averageWeight: productiveJson['average_weight'].toDouble(),
       daysToEndSeason: seasonJson['time_until_harvest']['days'].toDouble(),
+      percentage_time_left:
+          seasonJson['time_until_harvest']['percentage_time_left'].toDouble(),
     );
   }
 }
@@ -134,7 +137,7 @@ class _HomeState extends State<Home> {
       String hiveName = 'Honey harvest season';
       double daystoseason = homeData?.daysToEndSeason ?? 0.0;
 
-      if (daystoseason <= 10 && shouldTriggerNotification) {
+      if (daystoseason <= 10 && !shouldTriggerNotification) {
         NotificationService().showNotification(
           title: hiveName,
           body:
@@ -147,6 +150,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -311,7 +315,7 @@ class _HomeState extends State<Home> {
                                 // Define what happens when the button is pressed
                               },
                               child: Text(
-                                "${homeData?.apiaryName ?? '--'} apiary\n${homeData?.averageHoneyPercentage?.toStringAsFixed(1) ?? '--'}%\n${homeData?.averageWeight?.toStringAsFixed(1) ?? '--'}Kg",
+                                "${homeData?.apiaryName ?? '--'} apiary\n${homeData?.averageHoneyPercentage.toStringAsFixed(1) ?? '--'}%\n${homeData?.averageWeight.toStringAsFixed(1) ?? '--'}Kg",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -322,26 +326,61 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
                       const Text(
-                        'Hottest Apiary',
+                        'Apiaries requiring supplementary feeding',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           fontFamily: "Sans",
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 10.0),
                           child: SizedBox(
                             width: 350,
-                            height: 250,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: MyBarGraph(
-                                weeklySummary: weeklySummary,
+                            child: Card(
+                              clipBehavior: Clip.antiAlias,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              color: Colors.orange[100],
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 22, bottom: 12),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.brightness_1,
+                                            color: Colors.black,
+                                            size: 10,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            '${homeData?.apiaryName ?? '--'} at 32.2°C',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 16,
+                                              fontFamily: "Sans",
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -363,17 +402,17 @@ class _HomeState extends State<Home> {
                           animationDuration: 1000,
                           radius: 130,
                           lineWidth: 30,
-                          percent: 0.2,
-                          progressColor:
-                              const Color.fromARGB(255, 206, 109, 40),
-                          backgroundColor:
-                              const Color.fromARGB(255, 255, 206, 175),
+                          percent: (homeData?.percentage_time_left)! / 100 ?? 0,
+                          //  percent: 0.2,
+                          progressColor: Colors.amber,
+                          backgroundColor: Colors.amber[100] ?? Colors.amber,
+
                           circularStrokeCap: CircularStrokeCap.round,
                           center: Text(
                             homeData?.daysToEndSeason != null &&
                                     homeData!.daysToEndSeason <= 10
                                 ? "In Season"
-                                : "${homeData?.daysToEndSeason?.toStringAsFixed(0)} days \nto \nharvest season",
+                                : "${homeData?.daysToEndSeason.toStringAsFixed(0)} days \nto \nharvest season",
                             style: const TextStyle(
                               fontSize: 20,
                               fontFamily: "Sans",
