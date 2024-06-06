@@ -1,7 +1,7 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
-import 'package:farmer_app/navbar.dart';
-import 'package:farmer_app/splashscreen.dart';
+import 'package:HPGM/navbar.dart';
+import 'package:HPGM/splashscreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
@@ -22,8 +22,8 @@ Future<void> Logmein(BuildContext context) async {
   var headers = {'Accept': 'application/json'};
   var request = http.MultipartRequest(
       'POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
-  request.fields.addAll(
-      {'email': 'agatha.turyagyenda@gmail.com', 'password':'agatha'});
+  request.fields
+      .addAll({'email': 'agatha.turyagyenda@gmail.com', 'password': 'agatha'});
 
   request.headers.addAll(headers);
 
@@ -62,7 +62,7 @@ Future<void> Logmein(BuildContext context) async {
   } else {
     // Print "unauthorized"
     // print("Wrong credentials!");
-   print(response.reasonPhrase);
+    print(response.reasonPhrase);
     Fluttertoast.showToast(
         msg: "Wrong Credentials!",
         toastLength: Toast.LENGTH_SHORT,

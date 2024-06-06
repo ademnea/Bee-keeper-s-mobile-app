@@ -1,5 +1,5 @@
-import 'package:farmer_app/hivevideos.dart';
-import 'package:farmer_app/media.dart';
+import 'package:HPGM/hivevideos.dart';
+import 'package:HPGM/media.dart';
 import 'package:flutter/material.dart';
 
 class Mediamenu extends StatefulWidget {
@@ -19,7 +19,7 @@ class _MediamenuState extends State<Mediamenu> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            'Choose Hive x Media',
+            'Choose Hive ' + widget.hiveId.toString() + ' Media',
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

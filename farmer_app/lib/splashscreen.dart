@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:farmer_app/getstarted.dart';
-import 'package:farmer_app/login.dart';
+import 'package:HPGM/getstarted.dart';
+import 'package:HPGM/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

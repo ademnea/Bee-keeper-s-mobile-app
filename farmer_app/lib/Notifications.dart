@@ -1,6 +1,6 @@
+import 'package:HPGM/components/hive_tips.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:farmer_app/Services/notifi_service.dart';
+import 'package:HPGM/components/notificationbar.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({super.key});
@@ -61,6 +61,7 @@ class _NotificationsState extends State<Notifications> {
                                   const Text(
                                     'Notifications',
                                     style: TextStyle(
+                                        fontFamily: "Sans",
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20),
                                   ),
@@ -77,42 +78,53 @@ class _NotificationsState extends State<Notifications> {
                         )),
 
                     //first card
-                    Center(
+                    const Center(
                       child: Column(
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              NotificationService().showNotification(
-                                  title: 'Hive 2',
-                                  body:
-                                      'Temperature above 40°C! please check this hive.');
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.white, // Set background color to white
-                              ),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      50.0), // Make it a circle
-                                ),
-                              ),
-                            ),
-                            child: const Icon(
-                              LineIcons.bellAlt,
-                              size: 65, // Adjust icon size as needed
-                              color: Color.fromARGB(
-                                255,
-                                206,
-                                109,
-                                40,
-                              ), // Adjust icon color as needed
+                          NotificationComponent(
+                            date: 'June 4, 2024',
+                            title: 'Hive 1 weight',
+                            content:
+                                'Hive 1 almost ready!, please check this hive.',
+                          ),
+
+                          //second notification
+                          NotificationComponent(
+                            date: 'June 3 2024',
+                            title: 'Hive 3 temperature',
+                            content:
+                                'Hive 3 temperature soaring above 35°C!, please check this hive.',
+                          ),
+
+                          Padding(
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              "Daily Hive Management Tips",
+                              style: TextStyle(
+                                  fontFamily: "Sans",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
-                          //end of textbutton
 
-                          const Text('Notifications'),
+                          //Start of the hive management tips
+                          HiveTips(
+                            title: 'Supplementary feeding',
+                            content:
+                                'When the temperature of a farm or hive is over 35°C, it is advisable to put a trough of water in the apiary to support your bees.',
+                          ),
+                          //Second tip.
+                          HiveTips(
+                            title: 'Honey harvesting',
+                            content:
+                                'During honey harvest seasons, more weight on a hive, could indicate that it is ready for harvest.',
+                          ),
+                          //third tip.
+                          HiveTips(
+                            title: 'Device connection',
+                            content:
+                                'When a hive shows \'device disconnected\', this may indicate potential problems with the hive connection. It is therefore advisable to contact the support team.',
+                          ),
                         ],
                       ),
                     ),

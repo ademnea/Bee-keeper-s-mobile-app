@@ -1,4 +1,4 @@
-import 'package:farmer_app/splashscreen.dart';
+import 'package:HPGM/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

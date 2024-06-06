@@ -1,4 +1,4 @@
-import 'package:farmer_app/login.dart';
+import 'package:HPGM/login.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -29,7 +29,7 @@ class _GetStartedState extends State<GetStarted> {
 
   void _startTypingEffect() {
     const text =
-        'Welcome to the honey productivity system, the all in one app that will help you track your hive productivity on the go!';
+        'Welcome to the Honey Productivity, Guide and Monitor app (HPGM), the all in one app that will help you track your hive productivity on the go!';
     const typingInterval =
         Duration(milliseconds: 100); // Adjust typing speed as needed
 

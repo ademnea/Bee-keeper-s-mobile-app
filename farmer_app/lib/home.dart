@@ -1,17 +1,161 @@
-import 'package:farmer_app/components/bar_graph.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:HPGM/Services/notifi_service.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final String token;
+  final bool notify;
+
+  const Home({Key? key, required this.token, required this.notify})
+      : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
 
+class HomeData {
+  final int farms;
+  final int hives;
+  final String apiaryName;
+  final double averageHoneyPercentage;
+  final double averageWeight;
+  final double daysToEndSeason;
+  final double percentage_time_left;
+
+  HomeData({
+    required this.farms,
+    required this.hives,
+    required this.apiaryName,
+    required this.averageHoneyPercentage,
+    required this.averageWeight,
+    required this.daysToEndSeason,
+    required this.percentage_time_left,
+  });
+
+  factory HomeData.fromJson(
+    Map<String, dynamic> countJson,
+    Map<String, dynamic> productiveJson,
+    Map<String, dynamic> seasonJson,
+  ) {
+    return HomeData(
+      farms: countJson['total_farms'],
+      hives: countJson['total_hives'],
+      apiaryName: productiveJson['most_productive_farm']['name'],
+      averageHoneyPercentage:
+          productiveJson['average_honey_percentage'].toDouble(),
+      averageWeight: productiveJson['average_weight'].toDouble(),
+      daysToEndSeason: seasonJson['time_until_harvest']['days'].toDouble(),
+      percentage_time_left:
+          seasonJson['time_until_harvest']['percentage_time_left'].toDouble(),
+    );
+  }
+}
+
 class _HomeState extends State<Home> {
-  //list of the data.
+  HomeData? homeData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+    startPeriodicTemperatureCheck(1);
+  }
+
+  Future<void> getData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      String sendToken = "Bearer ${widget.token}";
+
+      var headers = {
+        'Accept': 'application/json',
+        'Authorization': sendToken,
+      };
+
+      // Concurrent requests
+      var responses = await Future.wait([
+        http.get(Uri.parse('https://www.ademnea.net/api/v1/farms/count'),
+            headers: headers),
+        http.get(
+            Uri.parse('https://www.ademnea.net/api/v1/farms/most-productive'),
+            headers: headers),
+        http.get(
+            Uri.parse(
+                'https://www.ademnea.net/api/v1/farms/time-until-harvest'),
+            headers: headers),
+      ]);
+
+      if (responses[0].statusCode == 200 &&
+          responses[1].statusCode == 200 &&
+          responses[2].statusCode == 200) {
+        Map<String, dynamic> countData = jsonDecode(responses[0].body);
+        Map<String, dynamic> productiveData = jsonDecode(responses[1].body);
+        Map<String, dynamic> seasonData = jsonDecode(responses[2].body);
+
+        //print(seasonData);
+        //print(productiveData);
+
+        setState(() {
+          homeData = HomeData.fromJson(countData, productiveData, seasonData);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        // Handle error
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error
+    }
+  }
+
+  Timer? _timer;
+
+  // Add this variable
+
+  void startPeriodicTemperatureCheck(int hiveId) {
+    _checkTemperature(hiveId);
+    _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
+      _checkTemperature(hiveId);
+    });
+  }
+
+  Future<void> _checkTemperature(int hiveId) async {
+    try {
+      bool shouldTriggerNotification = widget.notify;
+      String hiveName = 'Honey harvest season';
+      double daystoseason = homeData?.daysToEndSeason ?? 0.0;
+
+      if (daystoseason <= 10 && !shouldTriggerNotification) {
+        NotificationService().showNotification(
+          title: hiveName,
+          body:
+              'The Honey harvest season is here, check your hives and get the honey.',
+        );
+        // Set the flag to true once notification is triggered
+      }
+    } catch (error) {
+      print('Error fetching temperature: $error');
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   List<double> weeklySummary = [
     80.40,
     2.50,
@@ -25,484 +169,264 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(0),
-              child: Column(
-                children: [
-                  SizedBox(
-                      height: 200,
-                      width: 2000,
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.orange.withOpacity(0.8),
-                                  Colors.orange.withOpacity(0.6),
-                                  Colors.orange.withOpacity(0.4),
-                                  Colors.orange.withOpacity(0.2),
-                                  Colors.orange.withOpacity(0.1),
-                                  Colors.transparent,
-                                ],
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        width: double.infinity,
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.orange.withOpacity(0.8),
+                                    Colors.orange.withOpacity(0.6),
+                                    Colors.orange.withOpacity(0.4),
+                                    Colors.orange.withOpacity(0.2),
+                                    Colors.orange.withOpacity(0.1),
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-
-                          //image starts here
-                          Padding(
-                            padding: const EdgeInsets.only(top: 50.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: Image.asset(
-                                    'lib/images/log-1.png',
-                                    height: 80,
-                                    width: 80,
-                                  ),
-                                ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.person,
-                                  color: Color.fromARGB(255, 206, 109, 40),
-                                  size: 65,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          //second row.
-
-                          Padding(
-                            padding: const EdgeInsets.only(top: 150.0),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20.0),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white, // Grey color
-                                      borderRadius: BorderRadius.circular(
-                                          20), // Pill-like shape
-                                    ),
-                                    child: const Row(
-                                      children: [
-                                        Icon(
-                                          Icons.house,
-                                          color:
-                                              Color.fromARGB(255, 63, 59, 59),
-                                        ),
-                                        Text(
-                                          'Farms: 4',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 20.0),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white, // Grey color
-                                      borderRadius: BorderRadius.circular(
-                                          20), // Pill-like shape
-                                    ),
-                                    child: const Row(
-                                      children: [
-                                        Icon(
-                                          Icons.house,
-                                          color:
-                                              Color.fromARGB(255, 63, 59, 59),
-                                        ),
-                                        Text(
-                                          'Hives: 24',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Text(
-                    'Heaviest Hive',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'Sans'),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-
-                  //bees animation
-                  Center(),
-
-                  Center(
-                    child: Container(
-                      height: 250,
-                      width: 300,
-                      child: LiquidLinearProgressIndicator(
-                        value: 0.65, // Defaults to 0.5.
-                        valueColor: const AlwaysStoppedAnimation(Colors
-                            .amber), // Defaults to the current Theme's accentColor.
-                        backgroundColor: Colors.amber[
-                            100], // Defaults to the current Theme's backgroundColor.
-                        borderColor: Colors.brown,
-                        borderWidth: 5.0,
-                        borderRadius: 12.0,
-                        direction: Axis
-                            .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.horizontal.
-                        center: TextButton(
-                          onPressed: () {
-                            // Define what happens when the button is pressed
-                          },
-                          child: const Text(
-                            "Hive 2 at 65%",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(
-                    height: 20,
-                  ),
-
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Text(
-                    'Hottest Hive',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-
-                  //lets put the graph here.
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: SizedBox(
-                        width: 350,
-                        height: 250,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: MyBarGraph(
-                            weeklySummary: weeklySummary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-
-                  const Text(
-                    'Honey Harvest Season',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-
-                  //season progress bar here.
-
-                  Center(
-                    child: CircularPercentIndicator(
-                      animation: true,
-                      animationDuration: 1000,
-                      radius: 130,
-                      lineWidth: 30,
-                      percent: 0.4,
-                      progressColor: Colors.amber,
-                      backgroundColor: Colors.amber.shade100,
-                      circularStrokeCap: CircularStrokeCap.round,
-                      center: const Text(
-                        '4 months left',
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.deepOrange,
-                        ),
-                      ),
-// Text
-                    ), // CircularPercentIndicator
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    'Most Recent Harvests',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-
-                  //recent harvests card
-                  Center(
-                    child: SizedBox(
-                      width: 350,
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        color: Colors
-                            .brown[300], // Set the background color to gray
-                        child: Column(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(5),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 50.0),
                               child: Row(
                                 children: [
-                                  SizedBox(
-                                    width: 80,
+                                  Container(
+                                    child: Image.asset(
+                                      'lib/images/log-1.png',
+                                      height: 80,
+                                      width: 80,
+                                    ),
                                   ),
-                                  Icon(
-                                    Icons.polyline,
-                                    color: Color.fromARGB(255, 63, 59, 59),
-                                  ),
-                                  Text(
-                                    'Recent Harvests',
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold),
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.person,
+                                    color: Color.fromARGB(255, 206, 109, 40),
+                                    size: 65,
                                   ),
                                 ],
                               ),
                             ),
-
-                            //table
-                            Table(
-                              children: [
-                                TableRow(
-                                  children: [
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Mubende farm',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 150.0),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 20.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors.grey[
-                                                  300], // Background color
-                                            ),
-                                            child: const Text('Hives: 3'),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.house,
+                                            color:
+                                                Color.fromARGB(255, 63, 59, 59),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors
-                                                  .brown, // Background color
-                                            ),
-                                            child: const Text(
-                                              '12kg',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
+                                          Text(
+                                            'Apiaries: ${homeData?.farms ?? 0}',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: "Sans",
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Mityana farm',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
+                                  ),
+                                  const Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 20.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.house,
+                                            color:
+                                                Color.fromARGB(255, 63, 59, 59),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors.grey[
-                                                  300], // Background color
-                                            ),
-                                            child: const Text('Hives: 5'),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors
-                                                  .brown, // Background color
-                                            ),
-                                            child: const Text(
-                                              '15kg',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
+                                          Text(
+                                            'Hives: ${homeData?.hives ?? 0}',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: "Sans",
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    const TableCell(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Text(
-                                            'Hoima farm',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors.grey[
-                                                  300], // Background color
-                                            ),
-                                            child: const Text('Hives: 7'),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: Colors
-                                                  .brown, // Background color
-                                            ),
-                                            child: const Text(
-                                              '22kg',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                            TextButton(
-                              onPressed: () {},
-                              child: const Text(
-                                'See all',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Most productive apiary',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: 'Sans',
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Center(),
+                      Center(
+                        child: SizedBox(
+                          height: 250,
+                          width: 300,
+                          child: LiquidLinearProgressIndicator(
+                            //value: 0.64,
+                            value: homeData?.averageHoneyPercentage ?? 0,
+                            valueColor:
+                                const AlwaysStoppedAnimation(Colors.amber),
+                            backgroundColor: Colors.amber[100]!,
+                            borderColor: Colors.brown,
+                            borderWidth: 5.0,
+                            borderRadius: 12.0,
+                            direction: Axis.vertical,
+                            center: TextButton(
+                              onPressed: () {
+                                // Define what happens when the button is pressed
+                              },
+                              child: Text(
+                                "${homeData?.apiaryName ?? '--'} apiary\n${homeData?.averageHoneyPercentage.toStringAsFixed(1) ?? '--'}%\n${homeData?.averageWeight.toStringAsFixed(1) ?? '--'}Kg",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontFamily: "Sans",
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      const Text(
+                        'Apiaries requiring supplementary feeding',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: SizedBox(
+                            width: 350,
+                            child: Card(
+                              clipBehavior: Clip.antiAlias,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              color: Colors.orange[100],
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 22, bottom: 12),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.brightness_1,
+                                            color: Colors.black,
+                                            size: 10,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            '${homeData?.apiaryName ?? '--'} at 32.2°C',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 16,
+                                              fontFamily: "Sans",
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Honey Harvest Season',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Center(
+                        child: CircularPercentIndicator(
+                          animation: true,
+                          animationDuration: 1000,
+                          radius: 130,
+                          lineWidth: 30,
+                          percent: (homeData?.percentage_time_left)! / 100 ?? 0,
+                          //  percent: 0.2,
+                          progressColor: Colors.amber,
+                          backgroundColor: Colors.amber[100] ?? Colors.amber,
 
-                  Container(
-                    height: 20,
+                          circularStrokeCap: CircularStrokeCap.round,
+                          center: Text(
+                            homeData?.daysToEndSeason != null &&
+                                    homeData!.daysToEndSeason <= 10
+                                ? "In Season"
+                                : "${homeData?.daysToEndSeason.toStringAsFixed(0)} days \nto \nharvest season",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontFamily: "Sans",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
-                  // Add other cards here
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-//bottom navigation bar.
     );
   }
 }

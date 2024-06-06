@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:farmer_app/hivedetails.dart';
+import 'package:HPGM/hivedetails.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'dart:convert';
@@ -22,6 +22,10 @@ class Hive {
   final int farmId;
   final String? createdAt;
   final String? updatedAt;
+  final double? weight;
+  final double? temperature;
+  final bool isConnected;
+  final bool isColonized;
 
   Hive({
     required this.id,
@@ -30,6 +34,10 @@ class Hive {
     required this.farmId,
     required this.createdAt,
     required this.updatedAt,
+    required this.weight,
+    required this.temperature,
+    required this.isConnected,
+    required this.isColonized,
   });
 
   factory Hive.fromJson(Map<String, dynamic> json) {
@@ -40,6 +48,11 @@ class Hive {
       farmId: json['farm_id'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      weight: json['state']['weight']['record']?.toDouble(),
+      temperature:
+          json['state']['temperature']['interior_temperature']?.toDouble(),
+      isConnected: json['state']['connection_status']['Connected'],
+      isColonized: json['state']['colonization_status']['Colonized'],
     );
   }
 }
@@ -66,14 +79,21 @@ class _HivesState extends State<Hives> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
+
+        // print(data);
+
         setState(() {
           hives = data.map((hive) => Hive.fromJson(hive)).toList();
+
+          //print(hives);
         });
       } else {
-        // print('Failed to load hives: ${response.reasonPhrase}');
+        // Show an error message or handle the error appropriately
+        print('Failed to load hive data: ${response.statusCode}');
       }
     } catch (error) {
-      // print('Error fetching hives data: $error');
+      // Handle network errors or other exceptions
+      print('Error fetching hives: $error');
     }
   }
 
@@ -140,6 +160,7 @@ class _HivesState extends State<Hives> {
                                     'Prototype Apiary Hives',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
+                                        fontFamily: "Sans",
                                         fontSize: 20),
                                   ),
                                   const Spacer(),
@@ -179,150 +200,199 @@ class _HivesState extends State<Hives> {
   }
 
   Widget buildHiveCard(Hive hive) {
-    return Center(
-      child: SizedBox(
-        width: 350,
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HiveDetails(
+              hiveId: hive.id,
+              token: widget.token,
+            ),
           ),
-          color: Colors.brown[300],
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 5),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.hexagon,
-                      color: Colors.orange[700],
-                    ),
-                    const Text(
-                      'Hive Name: ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+        );
+      },
+      child: Center(
+        child: SizedBox(
+          width: 350,
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            color: Colors.brown[300],
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 22, bottom: 5),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.hexagon,
+                        color: Colors.orange[700],
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      'Hive ${hive.id}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 17,
-                        color: Colors.white,
+                      const Text(
+                        'Hive Name: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HiveDetails(
-                                hiveId: hive.id,
-                                token: widget.token,
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'Hive ${hive.id}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 17,
+                          fontFamily: "Sans",
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 40,
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HiveDetails(
+                                  hiveId: hive.id,
+                                  token: widget.token,
+                                ),
                               ),
+                            );
+                          },
+                          child: const Text(
+                            'Hive Data',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: "Sans",
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
-                        child: const Text(
-                          'Hive Data',
-                          style: TextStyle(
+                          ))
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 22, bottom: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.developer_board_rounded,
+                        color: Colors.orange[700],
+                      ),
+                      const Text(
+                        'Device:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        hive.isConnected ? 'Connected' : 'Disconnected',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: hive.isConnected ? Colors.white : Colors.red,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 22, bottom: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.thermostat,
+                        color: Colors.orange[700],
+                      ),
+                      const Text(
+                        'Temperature:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        hive.temperature != null
+                            ? '${hive.temperature?.toStringAsFixed(2)}°C'
+                            : '--',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 22, bottom: 20),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.scale_rounded,
+                        color: Colors.orange[700],
+                      ),
+                      const Text(
+                        'Weight:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        hive.temperature != null
+                            ? '${hive.weight?.toStringAsFixed(1)}Kg'
+                            : '--',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                        ),
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Text(
+                          hive.isColonized ? 'Colonized' : 'Not Colonized',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
                             color: Colors.white,
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontFamily: "Sans",
                           ),
-                        ))
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 10),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.developer_board_rounded,
-                      color: Colors.orange[700],
-                    ),
-                    const Text(
-                      'Device:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      ' Connected ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 10),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.thermostat,
-                      color: Colors.orange[700],
-                    ),
-                    const Text(
-                      'Temperature:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      ' 25°C',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 20),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.scale_rounded,
-                      color: Colors.orange[700],
-                    ),
-                    const Text(
-                      'Weight:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      ' 23Kg',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                    const Spacer(),
-                    const Padding(
-                      padding: EdgeInsets.only(right: 20),
-                      child: Text(
-                        ' Colonized',
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal, color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
