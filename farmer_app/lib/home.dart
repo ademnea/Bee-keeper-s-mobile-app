@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     getData();
-    startPeriodicTemperatureCheck(1);
+    startPeriodicTemperatureCheck();
   }
 
   Future<void> getData() async {
@@ -124,14 +124,14 @@ class _HomeState extends State<Home> {
 
   // Add this variable
 
-  void startPeriodicTemperatureCheck(int hiveId) {
-    _checkTemperature(hiveId);
+  void startPeriodicTemperatureCheck() {
+    _checkTemperature();
     _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
-      _checkTemperature(hiveId);
+      _checkTemperature();
     });
   }
 
-  Future<void> _checkTemperature(int hiveId) async {
+  Future<void> _checkTemperature() async {
     try {
       bool shouldTriggerNotification = widget.notify;
       String hiveName = 'Honey harvest season';
