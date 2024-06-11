@@ -2,6 +2,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
 import 'package:HPGM/navbar.dart';
 import 'package:HPGM/splashscreen.dart';
+import 'package:HPGM/Services/notifi_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
@@ -169,12 +170,10 @@ class _loginState extends State<login> {
                       Spacer(),
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Splashscreen(),
-                            ),
-                          );
+                          NotificationService().showNotification(
+                              title: 'Hive 2',
+                              body:
+                                  'Temperature above 40°C! please check this hive.');
                         },
                         child: const Text(
                           'Forgot Password?',
