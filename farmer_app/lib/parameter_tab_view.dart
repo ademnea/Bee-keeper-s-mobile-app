@@ -4,6 +4,8 @@ import 'package:HPGM/humidity.dart';
 import 'package:HPGM/media.dart';
 import 'package:HPGM/temperature.dart';
 
+import 'hive_humidity_monitoring.dart';
+
 class TabView extends StatefulWidget {
   final int hiveId;
   final String token;
@@ -135,10 +137,9 @@ class _TabViewState extends State<TabView> {
                                     child: Temperature(
                                         hiveId: widget.hiveId,
                                         token: widget.token)),
-                                // Center(
-                                //     child: Humidity(
-                                //         hiveId: widget.hiveId,
-                                //         token: widget.token)),
+                                Center(
+                                     child: Humidity(
+                                       hiveId: widget.hiveId, token: widget.token)),
                                 Center(child: Mediamenu(hiveId: widget.hiveId,
                                         token: widget.token)),
                               ],

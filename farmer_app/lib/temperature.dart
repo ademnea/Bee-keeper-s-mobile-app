@@ -25,7 +25,7 @@ class _TemperatureState extends State<Temperature> {
   void initState() {
     super.initState();
     _endDate = DateTime.now();
-    _startDate = _endDate.subtract(Duration(days: 6));
+    _startDate = _endDate.subtract(Duration(days: 2));
     getTempData(widget.hiveId, _startDate, _endDate);
   }
 
@@ -117,16 +117,6 @@ class _TemperatureState extends State<Temperature> {
         children: [
           Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Hive temperature',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[300]),
-                ),
-              ),
               Row(
                 children: [
                   TextButton.icon(
@@ -152,6 +142,18 @@ class _TemperatureState extends State<Temperature> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10,),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Hive temperature',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[300]),
+                ),
+              ),
+            SizedBox(height: 16,),
               Container(
                 height: 300,
                 width: screenWidth * 0.9,
@@ -214,6 +216,7 @@ class _TemperatureState extends State<Temperature> {
   '''
                 ),
               ),
+
               const SizedBox(height: 16),
               Card(
                 child: Padding(
@@ -236,7 +239,6 @@ class _TemperatureState extends State<Temperature> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
             ],
           ),
