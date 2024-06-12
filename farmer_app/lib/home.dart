@@ -295,7 +295,6 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Center(),
                       Center(
                         child: SizedBox(
                           height: 250,

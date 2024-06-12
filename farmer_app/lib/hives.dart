@@ -23,6 +23,7 @@ class Hive {
   final String? createdAt;
   final String? updatedAt;
   final double? weight;
+  final double? honeyLevel;
   final double? temperature;
   final bool isConnected;
   final bool isColonized;
@@ -36,6 +37,7 @@ class Hive {
     required this.updatedAt,
     required this.weight,
     required this.temperature,
+    required this.honeyLevel,
     required this.isConnected,
     required this.isColonized,
   });
@@ -51,6 +53,7 @@ class Hive {
       weight: json['state']['weight']['record']?.toDouble(),
       temperature:
           json['state']['temperature']['interior_temperature']?.toDouble(),
+      honeyLevel: json['state']['weight']['honey_percentage']?.toDouble(),
       isConnected: json['state']['connection_status']['Connected'],
       isColonized: json['state']['colonization_status']['Colonized'],
     );
@@ -208,6 +211,7 @@ class _HivesState extends State<Hives> {
             builder: (context) => HiveDetails(
               hiveId: hive.id,
               token: widget.token,
+              honeyLevel: hive.honeyLevel,
             ),
           ),
         );
@@ -265,6 +269,7 @@ class _HivesState extends State<Hives> {
                                 builder: (context) => HiveDetails(
                                   hiveId: hive.id,
                                   token: widget.token,
+                                  honeyLevel: hive.honeyLevel,
                                 ),
                               ),
                             );
