@@ -37,7 +37,7 @@ Widget buildTempSheet(String title, double? Levels) => SizedBox(
               Padding(
                 padding: const EdgeInsets.only(left: 30),
                 child: Text(
-                  "Level: $Levels",
+                  "Level: ${Levels?.toStringAsFixed(2) ?? '--'}°C",
                   style: const TextStyle(
                       fontFamily: "Sans",
                       fontSize: 20,
@@ -104,7 +104,7 @@ Widget buildHoneySheet(String title, double? Levels) => SizedBox(
               Padding(
                 padding: const EdgeInsets.only(left: 30),
                 child: Text(
-                  "Level: $Levels",
+                  "Level: ${Levels?.toStringAsFixed(2) ?? '--'}%",
                   style: const TextStyle(
                       fontFamily: "Sans",
                       fontSize: 20,
