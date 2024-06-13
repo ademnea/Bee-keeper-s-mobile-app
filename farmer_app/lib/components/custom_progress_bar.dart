@@ -11,7 +11,7 @@ class CustomProgressBar extends StatelessWidget {
   }) : super(key: key);
 
   Color getFillColor(double myvalue) {
-    if (value >= 20 && myvalue <= 28) {
+    if (value >= 20 && myvalue <= 29) {
       return Colors.green; // Shade of green for values between 20% and 29%
     } else {
       return Colors.red; // Red for values outside the 20%-29% range
