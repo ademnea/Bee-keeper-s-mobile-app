@@ -1,15 +1,22 @@
 import 'package:HPGM/components/imageslider.dart';
 import 'package:HPGM/parameter_tab_view.dart';
-import 'package:HPGM/splashscreen.dart';
+
 import 'package:HPGM/components/notificationbar.dart';
+
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HiveDetails extends StatefulWidget {
   final int hiveId;
+  final double? honeyLevel;
   final String token;
-  const HiveDetails({Key? key, required this.hiveId, required this.token})
+  const HiveDetails(
+      {Key? key,
+      required this.hiveId,
+      required this.token,
+      required this.honeyLevel})
       : super(key: key);
 
   @override
@@ -148,7 +155,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                   Center(
                     child: SizedBox(
                       width: double.infinity,
-                      height: 600,
+                      // height: 600,
                       child: Card(
                         clipBehavior: Clip.antiAlias,
 
@@ -221,7 +228,58 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   .grey[350], // Set the color of the divider
                               thickness: 2, // Set the thickness of the divider
                             ),
-
+                            const SizedBox(height: 15),
+                            Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                ),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Honey Levels',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: "Sans",
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //Now the honey levels indicator widget starts here.
+                            const SizedBox(height: 10),
+                            Center(
+                              child: SizedBox(
+                                height: 250,
+                                width: 300,
+                                child: LiquidLinearProgressIndicator(
+                                  value: widget.honeyLevel ?? 0.0,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      Colors.amber),
+                                  backgroundColor: Colors.amber[100]!,
+                                  borderColor:
+                                      const Color.fromARGB(255, 8, 7, 6),
+                                  borderWidth: 5.0,
+                                  borderRadius: 12.0,
+                                  direction: Axis.vertical,
+                                  center: TextButton(
+                                    onPressed: () {
+                                      // Define what happens when the button is pressed
+                                    },
+                                    child: Text(
+                                      "${widget.honeyLevel != null ? widget.honeyLevel!.toStringAsFixed(1) : '--'}%",
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black,
+                                        fontFamily: "Sans",
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
                             //row
                             Row(
                               children: [
@@ -229,15 +287,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                   padding: EdgeInsets.only(left: 10),
                                 ),
                                 TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Splashscreen(),
-                                      ),
-                                    );
-                                  },
+                                  onPressed: () {},
                                   child: const Text(
                                     'Hive Notifications',
                                     style: TextStyle(

@@ -25,7 +25,6 @@ class _TabViewState extends State<TabView> {
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
-              
               padding: const EdgeInsets.all(0),
               child: Column(
                 children: [
@@ -130,7 +129,21 @@ class _TabViewState extends State<TabView> {
                               ],
                             ),
                           ),
-
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                Center(
+                                    child: Temperature(
+                                        hiveId: widget.hiveId,
+                                        token: widget.token)),
+                                Center(
+                                    child: Humidity(
+                                        hiveId: widget.hiveId, token: widget.token)),
+                                Center(child: Mediamenu(hiveId: widget.hiveId,
+                                    token: widget.token)),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

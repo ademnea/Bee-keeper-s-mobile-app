@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:HPGM/hivedetails.dart';
 import 'package:http/http.dart' as http;
+import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:HPGM/components/custom_progress_bar.dart';
+import 'package:HPGM/components/pop_up.dart';
 import 'dart:convert';
 
 class Hives extends StatefulWidget {
@@ -23,6 +26,7 @@ class Hive {
   final String? createdAt;
   final String? updatedAt;
   final double? weight;
+  final double? honeyLevel;
   final double? temperature;
   final bool isConnected;
   final bool isColonized;
@@ -36,6 +40,7 @@ class Hive {
     required this.updatedAt,
     required this.weight,
     required this.temperature,
+    required this.honeyLevel,
     required this.isConnected,
     required this.isColonized,
   });
@@ -51,6 +56,7 @@ class Hive {
       weight: json['state']['weight']['record']?.toDouble(),
       temperature:
           json['state']['temperature']['interior_temperature']?.toDouble(),
+      honeyLevel: json['state']['weight']['honey_percentage']?.toDouble(),
       isConnected: json['state']['connection_status']['Connected'],
       isColonized: json['state']['colonization_status']['Colonized'],
     );
@@ -200,119 +206,116 @@ class _HivesState extends State<Hives> {
   }
 
   Widget buildHiveCard(Hive hive) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HiveDetails(
-              hiveId: hive.id,
-              token: widget.token,
-            ),
+    return Center(
+      child: SizedBox(
+        width: 350,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        );
-      },
-      child: Center(
-        child: SizedBox(
-          width: 350,
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            color: Colors.brown[300],
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 5),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.hexagon,
-                        color: Colors.orange[700],
+          color: Colors.brown[300],
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 5),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.hexagon,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Hive Name: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
                       ),
-                      const Text(
-                        'Hive Name: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      'Hive ${hive.id}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 17,
+                        fontFamily: "Sans",
+                        color: Colors.white,
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'Hive ${hive.id}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 17,
-                          fontFamily: "Sans",
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 40,
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HiveDetails(
-                                  hiveId: hive.id,
-                                  token: widget.token,
-                                ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HiveDetails(
+                                hiveId: hive.id,
+                                token: widget.token,
+                                honeyLevel: hive.honeyLevel,
                               ),
-                            );
-                          },
-                          child: const Text(
-                            'Hive Data',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: "Sans",
-                              fontWeight: FontWeight.bold,
                             ),
-                          ))
-                    ],
+                          );
+                        },
+                        child: const Text(
+                          'Hive Data',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: "Sans",
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 22, bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.developer_board_rounded,
+                      color: Colors.orange[700],
+                    ),
+                    const Text(
+                      'Device:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      hive.isConnected ? 'Connected' : 'Disconnected',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: hive.isConnected ? Colors.white : Colors.red,
+                        fontSize: 16,
+                        fontFamily: "Sans",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              InkWell(
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  builder: (context) => buildTempSheet(
+                    "Temperature Details",
+                    hive.temperature ?? 0,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 10),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.developer_board_rounded,
-                        color: Colors.orange[700],
-                      ),
-                      const Text(
-                        'Device:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        hive.isConnected ? 'Connected' : 'Disconnected',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: hive.isConnected ? Colors.white : Colors.red,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
+                child: Padding(
                   padding: const EdgeInsets.only(left: 22, bottom: 10),
                   child: Row(
                     children: [
@@ -331,22 +334,25 @@ class _HivesState extends State<Hives> {
                       const SizedBox(
                         width: 10,
                       ),
-                      Text(
-                        hive.temperature != null
-                            ? '${hive.temperature?.toStringAsFixed(2)}°C'
-                            : '--',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
+
+                      //temp levels indicator
+                      CustomProgressBar(
+                        value: hive.temperature ?? 0,
                       ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 20),
+              ),
+              InkWell(
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  builder: (context) => buildHoneySheet(
+                    "Honey Levels",
+                    hive.honeyLevel ?? 0,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 22, bottom: 8),
                   child: Row(
                     children: [
                       Icon(
@@ -354,7 +360,7 @@ class _HivesState extends State<Hives> {
                         color: Colors.orange[700],
                       ),
                       const Text(
-                        'Weight:',
+                        'Honey Levels:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -364,35 +370,37 @@ class _HivesState extends State<Hives> {
                       const SizedBox(
                         width: 10,
                       ),
-                      Text(
-                        hive.temperature != null
-                            ? '${hive.weight?.toStringAsFixed(1)}Kg'
-                            : '--',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Text(
-                          hive.isColonized ? 'Colonized' : 'Not Colonized',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: "Sans",
-                          ),
+                      SizedBox(
+                        height: 12,
+                        width: 100,
+                        child: LiquidLinearProgressIndicator(
+                          value: hive.honeyLevel ?? 0,
+                          valueColor:
+                              const AlwaysStoppedAnimation(Colors.amber),
+                          backgroundColor: Colors.amber[100]!,
+                          borderColor: Colors.brown,
+                          borderWidth: 1.0,
+                          borderRadius: 12.0,
+                          direction: Axis.horizontal,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  hive.isColonized ? 'Colonized' : 'Not Colonized',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "Sans",
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

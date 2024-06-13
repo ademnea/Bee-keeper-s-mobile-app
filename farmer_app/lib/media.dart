@@ -28,6 +28,7 @@ class _MediaState extends State<Media> {
     _startDate = _endDate.subtract(Duration(days: 6));
     fetchPhotos(widget.hiveId, _startDate, _endDate);
   }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
@@ -42,16 +43,18 @@ class _MediaState extends State<Media> {
         _endDate = picked.end!;
         fetchPhotos(widget.hiveId, _startDate, _endDate);
       });
-
     }
   }
 
-  Future<void> fetchPhotos(int hiveId,DateTime startDate, DateTime endDate) async {
+  Future<void> fetchPhotos(
+      int hiveId, DateTime startDate, DateTime endDate) async {
     try {
       String sendToken = "Bearer ${widget.token}";
-    //  String sendToken = "Bearer ${widget.token}";
-      String formattedStartDate = "${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}";
-      String formattedEndDate = "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}";
+      //  String sendToken = "Bearer ${widget.token}";
+      String formattedStartDate =
+          "${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}";
+      String formattedEndDate =
+          "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}";
 
       var headers = {
         'Accept': 'application/json',
@@ -178,7 +181,7 @@ class _MediaState extends State<Media> {
                             children: [
                               TextButton.icon(
                                 onPressed: () async {
-                                //  fetchPhotos(widget.hiveId);
+                                  //  fetchPhotos(widget.hiveId);
                                 },
                                 icon: const Icon(
                                   LineIcons.alternateCloudDownload,
