@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_echarts/flutter_echarts.dart';
 import 'package:http/http.dart' as http;
@@ -148,8 +147,7 @@ class _HumidityState extends State<Humidity> {
               Container(
                 height: 300,
                 width: screenWidth * 0.9,
-
-            child: Echarts(
+                 child: Echarts(
                 option: '''
   {
     tooltip: {
@@ -268,12 +266,7 @@ class _HumidityState extends State<Humidity> {
     ]
   }
   '''
-            )
-
-
-
-              ),
-
+            )),
               const SizedBox(height: 16),
               Card(
                 child: Padding(

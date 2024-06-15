@@ -18,16 +18,11 @@ final TextEditingController passwordcontroller = TextEditingController();
 var mytoken = '';
 
 Future<void> Logmein(BuildContext context) async {
-  // print("Logging in...");
-  // print("Username: ${usernamecontroller.text}, Password: ${passwordcontroller.text}");
+  print("Username: ${usernamecontroller.text}, Password: ${passwordcontroller.text}");
   var headers = {'Accept': 'application/json'};
-  var request = http.MultipartRequest(
-      'POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
-  request.fields
-      .addAll({'email': 'agatha.turyagyenda@gmail.com', 'password': 'agatha'});
-
+  var request = http.MultipartRequest('POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
+  request.fields.addAll({'email': usernamecontroller.text, 'password': passwordcontroller.text});
   request.headers.addAll(headers);
-
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
