@@ -109,7 +109,7 @@ class _loginState extends State<login> {
                     height: 25,
                   ),
 
-                  TextField(
+                  TextFormField(
                     controller: usernamecontroller,
                     decoration: InputDecoration(
                       labelText: 'Email',
@@ -137,8 +137,9 @@ class _loginState extends State<login> {
                     height: 20,
                   ),
 
-                  TextField(
+                  TextFormField(
                     controller: passwordcontroller,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       fillColor: Colors.brown.shade100, // Background color

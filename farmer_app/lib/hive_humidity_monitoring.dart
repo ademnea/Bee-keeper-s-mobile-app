@@ -23,7 +23,7 @@ class _HumidityState extends State<Humidity> {
   void initState() {
     super.initState();
     _endDate = DateTime.now();
-    _startDate = _endDate.subtract(Duration(days: 2));
+    _startDate = _endDate.subtract(Duration(days: 7));
     getTempData(widget.hiveId, _startDate, _endDate);
   }
   Future<void> _selectDate(BuildContext context) async {
@@ -148,146 +148,130 @@ class _HumidityState extends State<Humidity> {
               Container(
                 height: 300,
                 width: screenWidth * 0.9,
-  //               child: Echarts(
-  //                   option: '''
-  //   {
-  //     tooltip: {
-  //       trigger: 'axis',
-  //       axisPointer: {
-  //         type: 'cross',
-  //         label: {
-  //           backgroundColor: '#6a7985'
-  //         }
-  //       }
-  //     },
-  //     legend: {
-  //       data: ['Exterior', 'Interior']
-  //     },
-  //     xAxis: {
-  //       type: 'category',
-  //       boundaryGap: false,
-  //       data: ${jsonEncode(dates.map((date) => date.toString()).toList())},
-  //       axisLabel: {
-  //         formatter: function (value) {
-  //           var date = new Date(value);
-  //           return date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0') + ' ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
-  //         }
-  //       }
-  //     },
-  //     yAxis: {
-  //       type: 'value',
-  //       min: 50,
-  //       max: 100,
-  //       interval: 10,
-  //       axisLabel: {
-  //         formatter: '{value}%'
-  //       }
-  //     },
-  //     series: [
-  //       {
-  //         name: 'Exterior',
-  //         type: 'line',
-  //         data: ${jsonEncode(exteriorHumidity)},
-  //         itemStyle: {
-  //           color: 'blue'
-  //         },
-  //         connectNulls: false
-  //       },
-  //       {
-  //         name: 'Interior',
-  //         type: 'line',
-  //         data: ${jsonEncode(interiorHumidity)},
-  //         itemStyle: {
-  //           color: 'green'
-  //         },
-  //         connectNulls: false
-  //       }
-  //     ]
-  //   }
-  // '''
-  //               ),
+
             child: Echarts(
                 option: '''
-{
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross',
-      label: {
-        backgroundColor: '#6a7985'
+  {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        label: {
+          backgroundColor: '#6a7985'
+        }
+      },
+      formatter: function (params) {
+        var result = params[0].name + '<br/>';
+        params.forEach(function (item) {
+          result += item.seriesName + ' : ' + item.value + '%<br/>';
+        });
+        result += '<br/>';
+
+        // Calculate exterior highest, lowest, and average
+        var exteriorData = ${jsonEncode(exteriorHumidity)};
+        var exteriorHighest = Math.max(...exteriorData);
+        var exteriorLowest = Math.min(...exteriorData);
+        var exteriorSum = exteriorData.reduce((a, b) => a + b);
+        var exteriorAverage = (exteriorSum / exteriorData.length).toFixed(2);
+
+        result += 'Exterior Highest: ' + exteriorHighest.toFixed(2) + '%<br/>';
+        result += 'Exterior Lowest: ' + exteriorLowest.toFixed(2) + '%<br/>';
+        result += 'Exterior Average: ' + exteriorAverage + '%<br/>';
+
+        // Calculate interior highest, lowest, and average
+        var interiorData = ${jsonEncode(interiorHumidity)};
+        var interiorHighest = Math.max(...interiorData);
+        var interiorLowest = Math.min(...interiorData);
+        var interiorSum = interiorData.reduce((a, b) => a + b);
+        var interiorAverage = (interiorSum / interiorData.length).toFixed(2);
+
+        result += 'Interior Highest: ' + interiorHighest.toFixed(2) + '%<br/>';
+        result += 'Interior Lowest: ' + interiorLowest.toFixed(2) + '%<br/>';
+        result += 'Interior Average: ' + interiorAverage + '%';
+
+        return result;
       }
     },
-    formatter: function (params) {
-      var result = params[0].name + '<br/>';
-      params.forEach(function (item) {
-        result += item.seriesName + ' : ' + item.value + '%<br/>';
-      });
-      result += '<br/>';
-      result += 'Exterior Highest: 90.1%<br/>';
-      result += 'Exterior Lowest: 74.3%<br/>';
-      result += 'Exterior Average: ' + ((88.2 + 82.8 + 90.1 + 74.3) / 4).toFixed(2) + '%<br/>';
-      result += 'Interior Highest: 93.1%<br/>';
-      result += 'Interior Lowest: 82.8%<br/>';
-      result += 'Interior Average: ' + ((93.1 + 82.8 + 86.02 + 83.05) / 4).toFixed(2) + '%';
-      return result;
-    }
-  },
-  legend: {
-    data: ['Exterior', 'Interior'],
-    textStyle: {
-      color: 'white'
-    }
-  },
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    data: ${jsonEncode(dates.map((date) => date.toString()).toList())},
-    axisLabel: {
-      formatter: function (value) {
-        var date = new Date(value);
-        return date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0') + ' ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
-      },
+    legend: {
+      data: ['Exterior', 'Interior'],
       textStyle: {
         color: 'white'
       }
-    }
-  },
-  yAxis: {
-    type: 'value',
-    min: 50,
-    max: 100,
-    interval: 10,
-    axisLabel: {
-      formatter: '{value}%',
-      textStyle: {
-        color: 'white'
-      }
-    }
-  },
-  series: [
-    {
-      name: 'Exterior',
-      type: 'line',
-      data: ${jsonEncode(exteriorHumidity)},
-      itemStyle: {
-        color: 'blue'
-      },
-      connectNulls: false
     },
-    {
-      name: 'Interior',
-      type: 'line',
-      data: ${jsonEncode(interiorHumidity)},
-      itemStyle: {
-        color: 'green'
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: ${jsonEncode(dates.map((date) => date.toString()).toList())},
+      axisLabel: {
+        formatter: function (value) {
+          var date = new Date(value);
+          return date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0') + ' ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
+        },
+        textStyle: {
+          color: 'white'
+        }
+      }
+    },
+    yAxis: {
+      type: 'value',
+      min: 50,
+      max: 100,
+      interval: 10,
+      axisLabel: {
+        formatter: '{value}%',
+        textStyle: {
+          color: 'white'
+        }
+      }
+    },
+    series: [
+      {
+        name: 'Exterior',
+        type: 'line',
+        data: ${jsonEncode(exteriorHumidity)},
+        itemStyle: {
+          color: 'blue'
+        },
+        connectNulls: false,
+        markPoint: {
+          data: [
+            { type: 'max', name: 'Highest', symbol: 'pin', symbolSize: 60, label: { formatter: '{c}%', color: 'white' }, itemStyle: { color: 'blue' } },
+            { type: 'min', name: 'Lowest', symbol: 'pin', symbolSize: 60, label: { formatter: '{c}%', color: 'white' }, itemStyle: { color: 'blue' } }
+          ]
+        },
+        markLine: {
+          data: [
+            { type: 'average', name: 'Average', label: { formatter: '{c}%', color: 'white' }, itemStyle: { color: 'orange' } }
+          ]
+        }
       },
-      connectNulls: false
-    }
-  ]
-}
-'''
+      {
+        name: 'Interior',
+        type: 'line',
+        data: ${jsonEncode(interiorHumidity)},
+        itemStyle: {
+          color: 'green'
+        },
+        connectNulls: false,
+        markPoint: {
+          data: [
+            { type: 'max', name: 'Highest', symbol: 'pin', symbolSize: 60, label: { formatter: '{c}%', color: 'white' }, itemStyle: { color: 'green' } },
+            { type: 'min', name: 'Lowest', symbol: 'pin', symbolSize: 60, label: { formatter: '{c}%', color: 'white' }, itemStyle: { color: 'green' } }
+          ]
+        },
+        markLine: {
+          data: [
+            { type: 'average', name: 'Average', label: { formatter: '{c}%', color: 'white' }, itemStyle: { color: 'orange' } }
+          ]
+        }
+      }
+    ]
+  }
+  '''
             )
-                ,
+
+
+
               ),
 
               const SizedBox(height: 16),

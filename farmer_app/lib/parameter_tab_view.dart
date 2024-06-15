@@ -90,7 +90,7 @@ class _TabViewState extends State<TabView> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.brown[300], // Set the background color here
+                      color: Colors.brown[300],
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.5),
