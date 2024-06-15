@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:HPGM/Services/notifi_service.dart';
+import 'package:HPGM/components/pop_up.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
@@ -156,16 +157,6 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-  List<double> weeklySummary = [
-    80.40,
-    2.50,
-    42.42,
-    10.50,
-    100.20,
-    68.99,
-    90.10,
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -311,10 +302,17 @@ class _HomeState extends State<Home> {
                             direction: Axis.vertical,
                             center: TextButton(
                               onPressed: () {
-                                // Define what happens when the button is pressed
+                                // lets show honey levels when this is pressed.
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => buildHoneySheet(
+                                    "Average Honey Levels for ${homeData?.apiaryName} apiary",
+                                    homeData?.averageHoneyPercentage ?? 0,
+                                  ),
+                                );
                               },
                               child: Text(
-                                "${homeData?.apiaryName ?? '--'} apiary\n${homeData?.averageHoneyPercentage.toStringAsFixed(1) ?? '--'}%\n${homeData?.averageWeight.toStringAsFixed(1) ?? '--'}Kg",
+                                "${homeData?.apiaryName ?? '--'} apiary\n${(homeData?.averageHoneyPercentage != null ? (homeData!.averageHoneyPercentage! * 100).toStringAsFixed(1) : '--')}%\n${homeData?.averageWeight.toStringAsFixed(1) ?? '--'}Kg",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,

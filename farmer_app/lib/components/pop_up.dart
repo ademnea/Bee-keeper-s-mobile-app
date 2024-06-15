@@ -12,7 +12,7 @@ String determineMessage(double? level) {
   } else if (level >= 20 && level <= 29) {
     return "Moderate: Temperature is within the optimal range.";
   } else {
-    return "High: Temperature is above optimal levels. Supplementary feeding around the hives may be required.";
+    return "High: Temperature is above optimal levels. Supplementary feeding around the hives may be required\n\nConsider putting a trough of water or syrups around your hives. This helps the colony thrive, in such harsh temperatures.";
   }
 }
 
@@ -77,9 +77,9 @@ String determineHoneyMessage(double? honeyPercentage) {
   } else if (honeyPercentage < 0.2) {
     return "Low: Honey levels are very low.";
   } else if (honeyPercentage >= 0.2 && honeyPercentage <= 0.3) {
-    return "Moderate: Honey levels are within the optimal range.";
+    return "Moderate: Honey levels are moderate and good.";
   } else {
-    return "High: Honey levels are above optimal.";
+    return "High: Honey levels are above moderate. You may need to harvest honey, here.";
   }
 }
 
@@ -91,10 +91,15 @@ Widget buildHoneySheet(String title, double? Levels) => SizedBox(
           const SizedBox(
             height: 20,
           ),
-          Text(
-            title,
-            style: const TextStyle(
-                fontFamily: "Sans", fontSize: 25, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                  fontFamily: "Sans",
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
           const SizedBox(
             height: 20,
@@ -104,7 +109,7 @@ Widget buildHoneySheet(String title, double? Levels) => SizedBox(
               Padding(
                 padding: const EdgeInsets.only(left: 30),
                 child: Text(
-                  "Level: ${Levels?.toStringAsFixed(2) ?? '--'}%",
+                  "Level: ${(Levels! * 100).toStringAsFixed(2) ?? '--'}%",
                   style: const TextStyle(
                       fontFamily: "Sans",
                       fontSize: 20,
