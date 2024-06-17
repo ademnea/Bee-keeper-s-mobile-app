@@ -26,8 +26,8 @@ class HomeData {
   final double averageWeight;
   final double daysToEndSeason;
   final double percentage_time_left;
-  final double averageTemperatureLast7Days;
-  final String supplementaryApiaryName;
+  // final double averageTemperatureLast7Days;
+  // final String supplementaryApiaryName;
 
   HomeData({
     required this.farms,
@@ -37,16 +37,18 @@ class HomeData {
     required this.averageWeight,
     required this.daysToEndSeason,
     required this.percentage_time_left,
-    required this.averageTemperatureLast7Days,
-    required this.supplementaryApiaryName,
+    // required this.averageTemperatureLast7Days,
+    // required this.supplementaryApiaryName,
   });
 
   factory HomeData.fromJson(
-    Map<String, dynamic> countJson,
-    Map<String, dynamic> productiveJson,
-    Map<String, dynamic> seasonJson,
-    Map<String, dynamic> supplementData,
-  ) {
+      Map<String, dynamic> countJson,
+      Map<String, dynamic> productiveJson,
+      Map<String, dynamic> seasonJson,
+      Map<String, dynamic> supplementData
+      //List<dynamic> supplementData
+
+      ) {
     return HomeData(
       farms: countJson['total_farms'],
       hives: countJson['total_hives'],
@@ -57,9 +59,8 @@ class HomeData {
       daysToEndSeason: seasonJson['time_until_harvest']['days'].toDouble(),
       percentage_time_left:
           seasonJson['time_until_harvest']['percentage_time_left'].toDouble(),
-      averageTemperatureLast7Days:
-          supplementData['averageTemperatureLast7Days'].toDouble(),
-      supplementaryApiaryName: supplementData['name'],
+      // averageTemperatureLast7Days: supplementData[7].toDouble(),
+      // supplementaryApiaryName: supplementData[2],
     );
   }
 }
@@ -112,10 +113,12 @@ class _HomeState extends State<Home> {
         Map<String, dynamic> countData = jsonDecode(responses[0].body);
         Map<String, dynamic> productiveData = jsonDecode(responses[1].body);
         Map<String, dynamic> seasonData = jsonDecode(responses[2].body);
-        Map<String, dynamic> supplementData = jsonDecode(responses[3].body);
+        Map<String, dynamic> supplementData = jsonDecode(responses[2].body);
+        List<dynamic> supplementDat = jsonDecode(responses[3].body);
 
-        //print(responses[3].body);
-        // print(supplementData);
+        // print('.........................................');
+        // print(supplementDat);
+        // print('.........................................');
 
         setState(() {
           homeData = HomeData.fromJson(
@@ -154,6 +157,7 @@ class _HomeState extends State<Home> {
 
       if (daystoseason <= 10 && !shouldTriggerNotification) {
         NotificationService().showNotification(
+          id: 1,
           title: 'Honey harvest season',
           body:
               'The Honey harvest season is here, check your hives and harvest the honey.',
@@ -161,15 +165,16 @@ class _HomeState extends State<Home> {
         // Set the flag to true once notification is triggered
       }
 
-      double avgtemp = homeData?.averageTemperatureLast7Days ?? 0.0;
-      String apiaryName = homeData?.supplementaryApiaryName ?? '';
+      //double avgtemp = homeData?.averageTemperatureLast7Days ?? 0.0;
+      //  String apiaryName = homeData?.supplementaryApiaryName ?? '';
 
 // the if statement to check for the apiary temperatures.
-      if (avgtemp >= 30 && !shouldTriggerNotification) {
+      if (10 >= 30 && !shouldTriggerNotification) {
         NotificationService().showNotification(
+          id:2,
           title: "Supplementary Feeding",
           body:
-              '$apiaryName apiary temperature soaring above 30°C!, please check it out.',
+              '${homeData?.apiaryName} temperature soaring above 30°C!, please check it out. supplementary feeding may be required.',
         );
         // Set the flag to true once notification is triggered
       }
@@ -332,7 +337,7 @@ class _HomeState extends State<Home> {
                                 );
                               },
                               child: Text(
-                                "${homeData?.apiaryName ?? '--'} apiary\n${(homeData?.averageHoneyPercentage != null ? (homeData!.averageHoneyPercentage! * 100).toStringAsFixed(1) : '--')}%\n${homeData?.averageWeight.toStringAsFixed(1) ?? '--'}Kg",
+                                "${homeData?.apiaryName ?? '--'} apiary\n${(homeData?.averageHoneyPercentage.toStringAsFixed(2) ?? '--')}%\n${homeData?.averageWeight.toStringAsFixed(1) ?? '--'}Kg",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -419,11 +424,9 @@ class _HomeState extends State<Home> {
                           animationDuration: 1000,
                           radius: 130,
                           lineWidth: 30,
-                          percent: (homeData?.percentage_time_left)! / 100 ?? 0,
-                          //  percent: 0.2,
+                          percent: (homeData?.percentage_time_left ?? 0) / 100,
                           progressColor: Colors.amber,
                           backgroundColor: Colors.amber[100] ?? Colors.amber,
-
                           circularStrokeCap: CircularStrokeCap.round,
                           center: Text(
                             homeData?.daysToEndSeason != null &&

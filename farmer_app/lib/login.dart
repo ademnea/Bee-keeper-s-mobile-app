@@ -5,6 +5,7 @@ import 'package:HPGM/splashscreen.dart';
 import 'package:HPGM/Services/notifi_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class login extends StatefulWidget {
   const login({super.key});
@@ -18,10 +19,13 @@ final TextEditingController passwordcontroller = TextEditingController();
 var mytoken = '';
 
 Future<void> Logmein(BuildContext context) async {
-  print("Username: ${usernamecontroller.text}, Password: ${passwordcontroller.text}");
+  print(
+      "Username: ${usernamecontroller.text}, Password: ${passwordcontroller.text}");
   var headers = {'Accept': 'application/json'};
-  var request = http.MultipartRequest('POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
-  request.fields.addAll({'email': usernamecontroller.text, 'password': passwordcontroller.text});
+  var request = http.MultipartRequest(
+      'POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
+  request.fields.addAll(
+      {'email': usernamecontroller.text, 'password': passwordcontroller.text});
   request.headers.addAll(headers);
   http.StreamedResponse response = await request.send();
 
@@ -70,6 +74,15 @@ Future<void> Logmein(BuildContext context) async {
 void saveToken(String token) {
   // For simplicity, let's store it in a global variable
   mytoken = token;
+}
+
+//functions to launch the external url.
+final Uri _url = Uri.parse('http://wa.me/+256755088321');
+
+Future<void> _launchUrl() async {
+  if (!await launchUrl(_url)) {
+    throw Exception('Could not launch $_url');
+  }
 }
 
 class _loginState extends State<login> {
@@ -162,12 +175,7 @@ class _loginState extends State<login> {
                     children: [
                       Spacer(),
                       TextButton(
-                        onPressed: () {
-                          NotificationService().showNotification(
-                              title: 'Hive 2',
-                              body:
-                                  'Temperature above 40°C! please check this hive.');
-                        },
+                        onPressed: () {},
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
@@ -226,18 +234,16 @@ class _loginState extends State<login> {
                         const SizedBox(
                             width: 1), // Add some space between the texts
                         TextButton(
-                          onPressed: () {
-                            // Handle sign-in button press
-                          },
+                          onPressed: _launchUrl,
                           child: const Text(
                             "contact support team to register",
                             style: TextStyle(
                               color: Colors
-                                  .black, // Change color to blue for a link-like appearance
+                                  .blue, // Change color to blue for a link-like appearance
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),

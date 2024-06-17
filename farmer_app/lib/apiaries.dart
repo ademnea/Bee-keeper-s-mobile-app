@@ -381,7 +381,7 @@ class _ApiariesState extends State<Apiaries> {
                         height: 12,
                         width: 100,
                         child: LiquidLinearProgressIndicator(
-                          value: farm.honeypercent! / 100 ?? 0,
+                          value: (farm.honeypercent ?? 0) / 100,
                           valueColor:
                               const AlwaysStoppedAnimation(Colors.amber),
                           backgroundColor: Colors.amber[100]!,

@@ -17,7 +17,7 @@ class NotificationService {
 
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-        //awaiting below here. 
+    //awaiting below here.
     await notificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) async {});
@@ -31,7 +31,7 @@ class NotificationService {
   }
 
   Future showNotification(
-      {int id = 0, String? title, String? body, String? payLoad}) async {
+      {required int id, String? title, String? body, String? payLoad}) async {
     return notificationsPlugin.show(
         id, title, body, await notificationDetails());
   }
