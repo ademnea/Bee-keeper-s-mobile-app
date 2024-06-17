@@ -18,14 +18,25 @@ class CustomProgressBar extends StatelessWidget {
     }
   }
 
+  double getValue(double temperature) {
+    if (temperature <= 15) {
+      return 0.15;
+    } else if (temperature > 15 && temperature <= 29) {
+      return 0.64;
+    } else if (temperature > 29 && temperature <= 35) {
+      return 0.74;
+    } else {
+      return 0.85;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 12,
       width: 100,
       child: LiquidLinearProgressIndicator(
-        value: 0.64,
-        //value: homeData?.averageHoneyPercentage ?? 0,
+        value: getValue(value),
         valueColor: AlwaysStoppedAnimation(getFillColor(value)),
         backgroundColor: Colors.amber[100]!,
         borderColor: Colors.brown,

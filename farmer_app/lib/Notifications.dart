@@ -93,7 +93,7 @@ class _NotificationsState extends State<Notifications> {
                             date: 'June 18 2024',
                             title: 'prototype 2 apiary temperature',
                             content:
-                                'prototype 2 apiary temperature soaring above 30°C!, please check this hive.',
+                                'prototype 2 apiary temperature soaring above 30°C!, please check it out. supplementary feeding may be required.',
                           ),
 
                           Padding(

@@ -55,7 +55,7 @@ class _HiveDetailsState extends State<HiveDetails> {
 
         print(jsonData);
 
-        List<dynamic> imagePaths = jsonData['paths'];
+        List<dynamic> imagePaths = jsonData['path'];
 
         setState(() {
           photos = imagePaths
@@ -254,7 +254,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 height: 250,
                                 width: 300,
                                 child: LiquidLinearProgressIndicator(
-                                  value: widget.honeyLevel! / 100 ?? 0.0,
+                                  value: (widget.honeyLevel ?? 0) / 100,
                                   valueColor: const AlwaysStoppedAnimation(
                                       Colors.amber),
                                   backgroundColor: Colors.amber[100]!,

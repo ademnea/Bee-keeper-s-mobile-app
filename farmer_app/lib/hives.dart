@@ -374,8 +374,7 @@ class _HivesState extends State<Hives> {
                         height: 12,
                         width: 100,
                         child: LiquidLinearProgressIndicator(
-                          value: hive.honeyLevel! / 100 ?? 0,
-                          // value: hive.honeyLevel/100 ?? 0,
+                          value: (hive.honeyLevel ?? 0) / 100,
                           valueColor:
                               const AlwaysStoppedAnimation(Colors.amber),
                           backgroundColor: Colors.amber[100]!,
