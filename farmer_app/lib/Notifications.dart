@@ -82,18 +82,18 @@ class _NotificationsState extends State<Notifications> {
                       child: Column(
                         children: [
                           NotificationComponent(
-                            date: 'June 4, 2024',
-                            title: 'Hive 1 weight',
+                            date: 'June 18, 2024',
+                            title: 'Honey Harvest season',
                             content:
-                                'Hive 1 almost ready!, please check this hive.',
+                                'The Honey harvest season is here, check your hives and harvest the honey.',
                           ),
 
                           //second notification
                           NotificationComponent(
-                            date: 'June 3 2024',
-                            title: 'Hive 3 temperature',
+                            date: 'June 18 2024',
+                            title: 'prototype 2 apiary temperature',
                             content:
-                                'Hive 3 temperature soaring above 35°C!, please check this hive.',
+                                'prototype 2 apiary temperature soaring above 30°C!, please check this hive.',
                           ),
 
                           Padding(

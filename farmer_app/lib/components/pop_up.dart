@@ -74,9 +74,9 @@ Widget buildTempSheet(String title, double? Levels) => SizedBox(
 String determineHoneyMessage(double? honeyPercentage) {
   if (honeyPercentage == null) {
     return "No data available";
-  } else if (honeyPercentage < 0.2) {
+  } else if (honeyPercentage < 20) {
     return "Low: Honey levels are very low.";
-  } else if (honeyPercentage >= 0.2 && honeyPercentage <= 0.3) {
+  } else if (honeyPercentage >= 20 && honeyPercentage <= 50) {
     return "Moderate: Honey levels are moderate and good.";
   } else {
     return "High: Honey levels are above moderate. You may need to harvest honey, here.";
@@ -109,7 +109,7 @@ Widget buildHoneySheet(String title, double? Levels) => SizedBox(
               Padding(
                 padding: const EdgeInsets.only(left: 30),
                 child: Text(
-                  "Level: ${(Levels! * 100).toStringAsFixed(2) ?? '--'}%",
+                  "Level: ${Levels?.toStringAsFixed(2) ?? '--'}%",
                   style: const TextStyle(
                       fontFamily: "Sans",
                       fontSize: 20,
@@ -123,7 +123,7 @@ Widget buildHoneySheet(String title, double? Levels) => SizedBox(
                 height: 12,
                 width: 100,
                 child: LiquidLinearProgressIndicator(
-                  value: Levels ?? 0,
+                  value: Levels! / 100 ?? 0,
                   valueColor: const AlwaysStoppedAnimation(Colors.amber),
                   backgroundColor: Colors.amber[100]!,
                   borderColor: Colors.brown,

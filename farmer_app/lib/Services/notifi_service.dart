@@ -17,6 +17,7 @@ class NotificationService {
 
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+        //awaiting below here. 
     await notificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) async {});
