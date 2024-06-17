@@ -26,6 +26,8 @@ class HomeData {
   final double averageWeight;
   final double daysToEndSeason;
   final double percentage_time_left;
+  final double averageTemperatureLast7Days;
+  final String supplementaryApiaryName;
 
   HomeData({
     required this.farms,
@@ -35,12 +37,15 @@ class HomeData {
     required this.averageWeight,
     required this.daysToEndSeason,
     required this.percentage_time_left,
+    required this.averageTemperatureLast7Days,
+    required this.supplementaryApiaryName,
   });
 
   factory HomeData.fromJson(
     Map<String, dynamic> countJson,
     Map<String, dynamic> productiveJson,
     Map<String, dynamic> seasonJson,
+    Map<String, dynamic> supplementData,
   ) {
     return HomeData(
       farms: countJson['total_farms'],
@@ -52,6 +57,9 @@ class HomeData {
       daysToEndSeason: seasonJson['time_until_harvest']['days'].toDouble(),
       percentage_time_left:
           seasonJson['time_until_harvest']['percentage_time_left'].toDouble(),
+      averageTemperatureLast7Days:
+          supplementData['averageTemperatureLast7Days'].toDouble(),
+      supplementaryApiaryName: supplementData['name'],
     );
   }
 }
@@ -91,20 +99,27 @@ class _HomeState extends State<Home> {
             Uri.parse(
                 'https://www.ademnea.net/api/v1/farms/time-until-harvest'),
             headers: headers),
+        http.get(
+            Uri.parse(
+                'https://www.ademnea.net/api/v1/farms/supplementary-feeding'),
+            headers: headers),
       ]);
 
       if (responses[0].statusCode == 200 &&
           responses[1].statusCode == 200 &&
-          responses[2].statusCode == 200) {
+          responses[2].statusCode == 200 &&
+          responses[3].statusCode == 200) {
         Map<String, dynamic> countData = jsonDecode(responses[0].body);
         Map<String, dynamic> productiveData = jsonDecode(responses[1].body);
         Map<String, dynamic> seasonData = jsonDecode(responses[2].body);
+        Map<String, dynamic> supplementData = jsonDecode(responses[3].body);
 
-        //print(seasonData);
-        //print(productiveData);
+        //print(responses[3].body);
+        // print(supplementData);
 
         setState(() {
-          homeData = HomeData.fromJson(countData, productiveData, seasonData);
+          homeData = HomeData.fromJson(
+              countData, productiveData, seasonData, supplementData);
           isLoading = false;
         });
       } else {
@@ -126,23 +141,35 @@ class _HomeState extends State<Home> {
   // Add this variable
 
   void startPeriodicTemperatureCheck() {
-    _checkTemperature();
+    _checkNotifications();
     _timer = Timer.periodic(const Duration(minutes: 60), (timer) {
-      _checkTemperature();
+      _checkNotifications();
     });
   }
 
-  Future<void> _checkTemperature() async {
+  Future<void> _checkNotifications() async {
     try {
       bool shouldTriggerNotification = widget.notify;
-      String hiveName = 'Honey harvest season';
       double daystoseason = homeData?.daysToEndSeason ?? 0.0;
 
       if (daystoseason <= 10 && !shouldTriggerNotification) {
         NotificationService().showNotification(
-          title: hiveName,
+          title: 'Honey harvest season',
           body:
-              'The Honey harvest season is here, check your hives and get the honey.',
+              'The Honey harvest season is here, check your hives and harvest the honey.',
+        );
+        // Set the flag to true once notification is triggered
+      }
+
+      double avgtemp = homeData?.averageTemperatureLast7Days ?? 0.0;
+      String apiaryName = homeData?.supplementaryApiaryName ?? '';
+
+// the if statement to check for the apiary temperatures.
+      if (avgtemp >= 30 && !shouldTriggerNotification) {
+        NotificationService().showNotification(
+          title: "Supplementary Feeding",
+          body:
+              '$apiaryName apiary temperature soaring above 30°C!, please check it out.',
         );
         // Set the flag to true once notification is triggered
       }
@@ -224,11 +251,6 @@ class _HomeState extends State<Home> {
                                       ),
                                       child: Row(
                                         children: [
-                                          const Icon(
-                                            Icons.house,
-                                            color:
-                                                Color.fromARGB(255, 63, 59, 59),
-                                          ),
                                           Text(
                                             'Apiaries: ${homeData?.farms ?? 0}',
                                             style: const TextStyle(
@@ -253,11 +275,6 @@ class _HomeState extends State<Home> {
                                       ),
                                       child: Row(
                                         children: [
-                                          const Icon(
-                                            Icons.house,
-                                            color:
-                                                Color.fromARGB(255, 63, 59, 59),
-                                          ),
                                           Text(
                                             'Hives: ${homeData?.hives ?? 0}',
                                             style: const TextStyle(
@@ -292,7 +309,10 @@ class _HomeState extends State<Home> {
                           width: 300,
                           child: LiquidLinearProgressIndicator(
                             //value: 0.64,
-                            value: homeData?.averageHoneyPercentage ?? 0,
+                            value: (homeData?.averageHoneyPercentage != null
+                                ? homeData!.averageHoneyPercentage / 100
+                                : 0.0),
+
                             valueColor:
                                 const AlwaysStoppedAnimation(Colors.amber),
                             backgroundColor: Colors.amber[100]!,
