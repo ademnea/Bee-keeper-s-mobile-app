@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:line_icons/line_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart'; // for date formatting
 import 'package:HPGM/photo_view_page.dart';
 
 class Media extends StatefulWidget {
@@ -17,16 +18,37 @@ class Media extends StatefulWidget {
 }
 
 class _MediaState extends State<Media> {
-  List<String> photos = [];
+  List<Map<String, String>> photos = [];
   late DateTime _startDate;
   late DateTime _endDate;
+  int _currentPage = 1;
+  bool _isFetching = false;
+  bool _hasMore = true;
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _endDate = DateTime.now();
     _startDate = _endDate.subtract(Duration(days: 6));
-    fetchPhotos(widget.hiveId, _startDate, _endDate);
+    fetchPhotos(widget.hiveId, _startDate, _endDate, _currentPage);
+
+    // Add listener to detect when the user reaches the end of the list
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        // Load more photos if there are more to load
+        if (_hasMore && !_isFetching) {
+          fetchPhotos(widget.hiveId, _startDate, _endDate, _currentPage);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -41,53 +63,60 @@ class _MediaState extends State<Media> {
       setState(() {
         _startDate = picked.start!;
         _endDate = picked.end!;
-        fetchPhotos(widget.hiveId, _startDate, _endDate);
+        photos.clear();
+        _currentPage = 1;
+        fetchPhotos(widget.hiveId, _startDate, _endDate, _currentPage);
       });
     }
   }
 
   Future<void> fetchPhotos(
-      int hiveId, DateTime startDate, DateTime endDate) async {
+      int hiveId, DateTime startDate, DateTime endDate, int page) async {
+    if (_isFetching || !_hasMore) return;
+
+    setState(() {
+      _isFetching = true;
+    });
+
     try {
       String sendToken = "Bearer ${widget.token}";
-      //  String sendToken = "Bearer ${widget.token}";
       String formattedStartDate =
-          "${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}";
+          "${DateFormat('yyyy-MM-dd').format(startDate)}";
       String formattedEndDate =
-          "${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}";
+          "${DateFormat('yyyy-MM-dd').format(endDate)}";
 
       var headers = {
         'Accept': 'application/json',
         'Authorization': sendToken,
       };
-      var request = http.Request(
-          'GET',
-          Uri.parse(
-              'https://www.ademnea.net/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate'));
-
-      request.headers.addAll(headers);
-
-      http.StreamedResponse response = await request.send();
+      var response = await http.get(
+        Uri.parse(
+            'https://www.ademnea.net/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate?page=$page'),
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
-        String responseBody = await response.stream.bytesToString();
-        final jsonData = jsonDecode(responseBody);
-
-        //  print(jsonData);
-
-        List<dynamic> imagePaths = jsonData['paths'];
+        final jsonData = jsonDecode(response.body);
+        List<dynamic> data = jsonData['data'];
+        bool hasMore = jsonData['pagination']['next_page_url'] != null;
 
         setState(() {
-          photos = imagePaths
-              .map<String>((path) =>
-                  'https://www.ademnea.net/${path.replaceFirst("public/", "")}')
-              .toList();
+          photos.addAll(data.map<Map<String, String>>((item) => {
+            'date': item['date'],
+            'path': 'https://www.ademnea.net/${item['path'].replaceAll('public/', '')}' // Remove 'public/' from path
+          }).toList());
+          _isFetching = false;
+          _hasMore = hasMore;
+          _currentPage++;
         });
       } else {
         throw Exception('Failed to load photos');
       }
     } catch (error) {
       print('Error fetching photos: $error');
+      setState(() {
+        _isFetching = false;
+      });
     }
   }
 
@@ -96,6 +125,7 @@ class _MediaState extends State<Media> {
     return Scaffold(
       body: Container(
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(0),
@@ -208,43 +238,65 @@ class _MediaState extends State<Media> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: GridView.builder(
-                                physics: const BouncingScrollPhysics(
-                                    //  parent: AlwaysScrollableScrollPhysics(),
-                                    ),
+                                physics: const BouncingScrollPhysics(),
+                                controller: _scrollController,
                                 padding: const EdgeInsets.all(1.0),
-                                itemCount: photos.length,
+                                itemCount: photos.length + (_hasMore ? 1 : 0),
                                 gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3,
+                                  crossAxisSpacing: 1.0,
+                                  mainAxisSpacing: 1.0,
                                 ),
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    padding: const EdgeInsets.all(1.0),
-                                    child: InkWell(
+                                  if (index < photos.length) {
+                                    return InkWell(
                                       onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => PhotoViewPage(
-                                            photos: photos,
+                                            photos: photos
+                                                .map((photo) => photo['path']!)
+                                                .toList(),
                                             index: index,
                                           ),
                                         ),
                                       ),
-                                      child: Hero(
-                                        tag: photos[index],
-                                        child: CachedNetworkImage(
-                                          imageUrl: photos[index],
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              Container(color: Colors.grey),
-                                          errorWidget: (context, url, error) =>
-                                              Container(
-                                            color: Colors.red.shade400,
+                                      child: Column(
+                                        children: [
+                                          Hero(
+                                            tag: photos[index]['path']!,
+                                            child: CachedNetworkImage(
+                                              imageUrl: photos[index]['path']!,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                      color: Colors.grey),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                  Container(
+                                                    color: Colors.red.shade400,
+                                                  ),
+                                            ),
                                           ),
-                                        ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            DateFormat('yyyy-MM-dd hh:mm:ss')
+                                                .format(DateTime.parse(
+                                                photos[index]['date']!)),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  } else if (_isFetching) {
+                                    return _buildProgressIndicator();
+                                  } else {
+                                    return Container();
+                                  }
                                 },
                               ),
                             ),
@@ -258,6 +310,15 @@ class _MediaState extends State<Media> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProgressIndicator() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CircularProgressIndicator(),
       ),
     );
   }

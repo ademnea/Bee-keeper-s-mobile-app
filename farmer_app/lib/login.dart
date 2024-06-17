@@ -26,12 +26,9 @@ Future<void> Logmein(BuildContext context) async {
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
-    // Extract the token from the response
     String responseBody = await response.stream.bytesToString();
     Map<String, dynamic> responseData = jsonDecode(responseBody);
     String token = responseData['token'];
-
-    // Save the token for later use
     saveToken(token);
 
     // Print success message
