@@ -212,9 +212,9 @@ class _HumidityState extends State<Humidity> {
     },
     yAxis: {
       type: 'value',
-      min: 50,
-      max: 100,
-      interval: 10,
+      min: 30,
+      max: 90,
+      interval: 15,
       axisLabel: {
         formatter: '{value}%',
         textStyle: {
