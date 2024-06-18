@@ -1,23 +1,23 @@
 import 'package:HPGM/components/imageslider.dart';
 import 'package:HPGM/parameter_tab_view.dart';
-
 import 'package:HPGM/components/notificationbar.dart';
-
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // for date formatting
 
 class HiveDetails extends StatefulWidget {
   final int hiveId;
   final double? honeyLevel;
   final String token;
-  const HiveDetails(
-      {Key? key,
-      required this.hiveId,
-      required this.token,
-      required this.honeyLevel})
-      : super(key: key);
+
+  const HiveDetails({
+    Key? key,
+    required this.hiveId,
+    required this.token,
+    required this.honeyLevel,
+  }) : super(key: key);
 
   @override
   State<HiveDetails> createState() => _HiveDetailsState();
@@ -25,42 +25,50 @@ class HiveDetails extends StatefulWidget {
 
 class _HiveDetailsState extends State<HiveDetails> {
   List<String> photos = [];
+  late DateTime _startDate;
+  late DateTime _endDate;
 
   @override
   void initState() {
     super.initState();
-    fetchPhotos(widget.hiveId);
+    // _endDate = DateTime.now();
+    // _startDate = _endDate.subtract(Duration(days: 6));
+    // fetchPhotos(widget.hiveId, _startDate, _endDate);
+
+    //hard coded for presentation purposes
+    DateTime startDate = DateTime(2024, 5, 21);
+    DateTime endDate = DateTime(2024, 6, 5);
+    fetchPhotos(widget.hiveId, startDate, endDate);
   }
 
-  Future<void> fetchPhotos(int hiveId) async {
+  Future<void> fetchPhotos(
+      int hiveId, DateTime startDate, DateTime endDate) async {
     try {
       String sendToken = "Bearer ${widget.token}";
+      String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+      String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
 
       var headers = {
         'Accept': 'application/json',
         'Authorization': sendToken,
       };
-      var request = http.Request(
-          'GET',
-          Uri.parse(
-              'https://www.ademnea.net/api/v1/hives/$hiveId/images/2023-12-12/2024-12-12'));
 
-      request.headers.addAll(headers);
-
-      http.StreamedResponse response = await request.send();
+      var response = await http.get(
+        Uri.parse(
+            'https://www.ademnea.net/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate'),
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
-        String responseBody = await response.stream.bytesToString();
+        String responseBody = response.body;
         final jsonData = jsonDecode(responseBody);
 
-        print(jsonData);
-
-        List<dynamic> imagePaths = jsonData['path'];
+        List<dynamic> imagePaths = jsonData['data'];
 
         setState(() {
           photos = imagePaths
-              .map<String>((path) =>
-                  'https://www.ademnea.net/${path.replaceFirst("public/", "")}')
+              .map<String>((item) =>
+                  'https://www.ademnea.net/${item['path'].replaceFirst("public/", "")}')
               .toList();
         });
       } else {
@@ -82,67 +90,65 @@ class _HiveDetailsState extends State<HiveDetails> {
               child: Column(
                 children: [
                   SizedBox(
-                      height: 120,
-                      width: 2000,
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.orange.withOpacity(0.8),
-                                  Colors.orange.withOpacity(0.6),
-                                  Colors.orange.withOpacity(0.4),
-                                  Colors.orange.withOpacity(0.2),
-                                  Colors.orange.withOpacity(0.1),
-                                  Colors.transparent,
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          //image starts here
-                          Padding(
-                            padding: const EdgeInsets.only(top: 50.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(
-                                      Icons.chevron_left_rounded,
-                                      color: Color.fromARGB(255, 206, 109, 40),
-                                      size: 65,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 90,
-                                ),
-                                Text(
-                                  'Hive ${widget.hiveId}',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "Sans",
-                                      fontSize: 20),
-                                ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.person,
-                                  color: Color.fromARGB(255, 206, 109, 40),
-                                  size: 65,
-                                ),
+                    height: 120,
+                    width: 2000,
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.orange.withOpacity(0.8),
+                                Colors.orange.withOpacity(0.6),
+                                Colors.orange.withOpacity(0.4),
+                                Colors.orange.withOpacity(0.2),
+                                Colors.orange.withOpacity(0.1),
+                                Colors.transparent,
                               ],
                             ),
                           ),
-                        ],
-                      )),
-
-                  //image starts here
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(
+                                    Icons.chevron_left_rounded,
+                                    color: Color.fromARGB(255, 206, 109, 40),
+                                    size: 65,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 90,
+                              ),
+                              Text(
+                                'Hive ${widget.hiveId}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Sans",
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const Spacer(),
+                              const Icon(
+                                Icons.person,
+                                color: Color.fromARGB(255, 206, 109, 40),
+                                size: 65,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (photos.isNotEmpty)
                     SizedBox(
                       width: double.infinity,
@@ -150,23 +156,15 @@ class _HiveDetailsState extends State<HiveDetails> {
                         imageUrls: photos,
                       ),
                     ),
-
-                  //first card
                   Center(
                     child: SizedBox(
                       width: double.infinity,
-                      // height: 600,
                       child: Card(
                         clipBehavior: Clip.antiAlias,
-
-                        color: Colors
-                            .brown[300], // Set the background color to gray
+                        color: Colors.brown[300],
                         child: Column(
                           children: [
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            //row
+                            const SizedBox(height: 10),
                             Row(
                               children: [
                                 Padding(
@@ -184,9 +182,7 @@ class _HiveDetailsState extends State<HiveDetails> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
+                                const SizedBox(width: 10),
                                 const Text(
                                   'Connected',
                                   style: TextStyle(
@@ -221,12 +217,10 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 ),
                               ],
                             ),
-
                             Divider(
-                              height: 1, // Set the height of the divider
-                              color: Colors
-                                  .grey[350], // Set the color of the divider
-                              thickness: 2, // Set the thickness of the divider
+                              height: 1,
+                              color: Colors.grey[350],
+                              thickness: 2,
                             ),
                             const SizedBox(height: 15),
                             Row(
@@ -247,7 +241,6 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 ),
                               ],
                             ),
-                            //Now the honey levels indicator widget starts here.
                             const SizedBox(height: 10),
                             Center(
                               child: SizedBox(
@@ -280,7 +273,6 @@ class _HiveDetailsState extends State<HiveDetails> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            //row
                             Row(
                               children: [
                                 const Padding(
@@ -299,12 +291,9 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 ),
                               ],
                             ),
-
-                            //notifications start here.
                             Container(
                               child: const Column(
                                 children: [
-                                  //notifications
                                   NotificationComponent(
                                     date: 'June 3, 2024',
                                     title: 'Normal Condition',
@@ -313,7 +302,6 @@ class _HiveDetailsState extends State<HiveDetails> {
                                 ],
                               ),
                             ),
-//notifications end
                             const Padding(
                               padding:
                                   EdgeInsets.only(left: 0, bottom: 22, top: 8),
@@ -323,18 +311,13 @@ class _HiveDetailsState extends State<HiveDetails> {
                       ),
                     ),
                   ),
-
-                  Container(
-                    height: 20,
-                  ),
-                  // Add other cards here
+                  Container(height: 20),
                 ],
               ),
             ),
           ),
         ),
       ),
-//bottom navigation bar.
     );
   }
 }

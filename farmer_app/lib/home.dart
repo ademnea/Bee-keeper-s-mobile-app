@@ -169,12 +169,16 @@ class _HomeState extends State<Home> {
       //  String apiaryName = homeData?.supplementaryApiaryName ?? '';
 
 // the if statement to check for the apiary temperatures.
-      if (10 >= 30 && !shouldTriggerNotification) {
+      String myname = '${homeData?.apiaryName ?? 'prototype'}';
+
+      print(myname);
+
+      if (40 >= 30 && !shouldTriggerNotification) {
         NotificationService().showNotification(
-          id:2,
+          id: 2,
           title: "Supplementary Feeding",
           body:
-              '${homeData?.apiaryName} temperature soaring above 30°C!, please check it out. supplementary feeding may be required.',
+              '$myname temperature soaring above 30°C!, please check it out. supplementary feeding may be required.',
         );
         // Set the flag to true once notification is triggered
       }
