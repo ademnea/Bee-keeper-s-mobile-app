@@ -40,6 +40,7 @@ dependencies:
   graphic: ^2.2.1
   flutter_echarts: ^2.5.0
   video_thumbnail: ^0.5.3
+  carousel_slider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -51,7 +52,6 @@ dev_dependencies:
   intl: ^0.18.1
   google_nav_bar: ^5.0.6
   line_icons: ^2.0.0
-  carousel_slider: ^4.0.0
   table_calendar: ^3.0.0
   fl_chart: ^0.66.2
   cached_network_image: ^3.2.3
