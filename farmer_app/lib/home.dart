@@ -91,18 +91,18 @@ class _HomeState extends State<Home> {
 
       // Concurrent requests
       var responses = await Future.wait([
-        http.get(Uri.parse('https://www.ademnea.net/api/v1/farms/count'),
+        http.get(Uri.parse('http://196.43.168.57/api/v1/farms/count'),
             headers: headers),
         http.get(
-            Uri.parse('https://www.ademnea.net/api/v1/farms/most-productive'),
-            headers: headers),
-        http.get(
-            Uri.parse(
-                'https://www.ademnea.net/api/v1/farms/time-until-harvest'),
+            Uri.parse('http://196.43.168.57/api/v1/farms/most-productive'),
             headers: headers),
         http.get(
             Uri.parse(
-                'https://www.ademnea.net/api/v1/farms/supplementary-feeding'),
+                'http://196.43.168.57/api/v1/farms/time-until-harvest'),
+            headers: headers),
+        http.get(
+            Uri.parse(
+                'http://196.43.168.57/api/v1/farms/supplementary-feeding'),
             headers: headers),
       ]);
 
@@ -171,7 +171,7 @@ class _HomeState extends State<Home> {
 // the if statement to check for the apiary temperatures.
       String myname = '${homeData?.apiaryName ?? 'prototype'}';
 
-      print(myname);
+ 
 
       if (40 >= 30 && !shouldTriggerNotification) {
         NotificationService().showNotification(
@@ -198,8 +198,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Center(
+          : ListView(
+              children:[ Center(
                 child: Padding(
                   padding: const EdgeInsets.all(0),
                   child: Column(
@@ -450,7 +450,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-            ),
+   ] ),
     );
   }
 }

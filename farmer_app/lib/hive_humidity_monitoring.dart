@@ -56,7 +56,7 @@ class _HumidityState extends State<Humidity> {
 
       var request = http.Request(
         'GET',
-        Uri.parse('https://www.ademnea.net/api/v1/hives/$hiveId/humidity/$formattedStartDate/$formattedEndDate'),
+        Uri.parse('http://196.43.168.57/api/v1/hives/$hiveId/humidity/$formattedStartDate/$formattedEndDate'),
       );
       request.headers.addAll(headers);
 

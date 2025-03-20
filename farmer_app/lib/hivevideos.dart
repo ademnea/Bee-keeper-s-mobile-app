@@ -67,7 +67,7 @@ class _HiveVideosState extends State<HiveVideos> {
         'Accept': 'application/json',
         'Authorization': sendToken,
       };
-      var request = http.Request('GET', Uri.parse('https://www.ademnea.net/api/v1/hives/$hiveId/videos/$formattedStartDate/$formattedEndDate?page=$page'));
+      var request = http.Request('GET', Uri.parse('http://196.43.168.57/api/v1/hives/$hiveId/videos/$formattedStartDate/$formattedEndDate?page=$page'));
       request.headers.addAll(headers);
       http.StreamedResponse response = await request.send();
 
@@ -80,7 +80,7 @@ class _HiveVideosState extends State<HiveVideos> {
         setState(() {
           videos.addAll(videoData.map((video) {
             return {
-              'path': 'https://www.ademnea.net/${video['path'].replaceFirst("public/", "")}',
+              'path': 'http://196.43.168.57/${video['path'].replaceFirst("public/", "")}',
               'date': video['date']
             };
           }).toList());

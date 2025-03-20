@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'package:HPGM/components/pop_up.dart';
-import 'package:HPGM/hives.dart';
-import 'package:HPGM/components/custom_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
+import 'farm_model.dart';
+import 'farm_card.dart';
 
 class Apiaries extends StatefulWidget {
   final String token;
@@ -14,47 +12,6 @@ class Apiaries extends StatefulWidget {
 
   @override
   State<Apiaries> createState() => _ApiariesState();
-}
-
-class Farm {
-  final int id;
-  final int ownerId;
-  final String name;
-  final String district;
-  final String address;
-  final double? average_temperature;
-  final double? average_weight;
-  final double? honeypercent;
-  final String? createdAt;
-  final String? updatedAt;
-
-  Farm({
-    required this.id,
-    required this.ownerId,
-    required this.name,
-    required this.district,
-    required this.average_temperature,
-    required this.average_weight,
-    required this.honeypercent,
-    required this.address,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory Farm.fromJson(Map<String, dynamic> json) {
-    return Farm(
-      id: json['id'],
-      ownerId: json['ownerId'],
-      name: json['name'],
-      district: json['district'],
-      address: json['address'],
-      average_temperature: json['average_temperature']?.toDouble(),
-      average_weight: json['average_weight']?.toDouble(),
-      honeypercent: json['average_honey_percentage']?.toDouble(),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-    );
-  }
 }
 
 class _ApiariesState extends State<Apiaries> {
@@ -75,7 +32,7 @@ class _ApiariesState extends State<Apiaries> {
         'Authorization': sendToken,
       };
       var response = await http.get(
-        Uri.parse('https://www.ademnea.net/api/v1/farms/'),
+        Uri.parse('http://196.43.168.57/api/v1/farms'),
         headers: headers,
       );
 
@@ -94,15 +51,12 @@ class _ApiariesState extends State<Apiaries> {
   }
 
   Future<void> _handleRefresh() async {
-    //reload the page data.
-    // initState();
     return await Future.delayed(const Duration(seconds: 1));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.orange[100],
       body: LiquidPullToRefresh(
         onRefresh: _handleRefresh,
         color: Colors.orange,
@@ -169,15 +123,12 @@ class _ApiariesState extends State<Apiaries> {
                         ],
                       ),
                     ),
-
-                    // ListView.builder to dynamically create cards
-
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: farms.length,
                       itemBuilder: (context, index) {
-                        return buildFarmCard(farms[index]);
+                        return buildFarmCard(farms[index], context, widget.token);
                       },
                     ),
                   ],
@@ -185,218 +136,6 @@ class _ApiariesState extends State<Apiaries> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildFarmCard(Farm farm) {
-    return Center(
-      child: SizedBox(
-        width: 350,
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.brown[300],
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Table(
-                children: [
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                "Apiary:",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontFamily: "Sans"),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                farm.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 17,
-                                    fontFamily: "Sans",
-                                    color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      TableCell(
-                        child: Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: TextButton(
-                            onPressed: () {
-                              // Navigate to hives page by sending the hive id
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Hives(
-                                      farmId: farm.id, token: widget.token),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'view hives',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                fontFamily: "Sans",
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 10),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.orange[700],
-                    ),
-                    const Text(
-                      'Location:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: "Sans",
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      '${farm.district}, ${farm.address}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: "Sans",
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 10),
-                child: InkWell(
-                  // on tap, we display the pop up.
-                  onTap: () => showModalBottomSheet(
-                    context: context,
-                    builder: (context) => buildTempSheet(
-                      "Temperature Details",
-                      farm.average_temperature ?? 0,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.thermostat,
-                        color: Colors.orange[700],
-                      ),
-                      const Text(
-                        'Average Temperature:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      CustomProgressBar(
-                        value: farm.average_temperature ?? 0,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  builder: (context) => buildHoneySheet(
-                    "Honey Levels",
-                    farm.honeypercent ?? 0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 20),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.scale_rounded,
-                        color: Colors.orange[700],
-                      ),
-                      const Text(
-                        'Honey Levels:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      SizedBox(
-                        height: 12,
-                        width: 100,
-                        child: LiquidLinearProgressIndicator(
-                          value: (farm.honeypercent ?? 0) / 100,
-                          valueColor:
-                              const AlwaysStoppedAnimation(Colors.amber),
-                          backgroundColor: Colors.amber[100]!,
-                          borderColor: Colors.brown,
-                          borderWidth: 1.0,
-                          borderRadius: 12.0,
-                          direction: Axis.horizontal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

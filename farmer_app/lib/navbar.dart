@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: login(),
+      home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -99,7 +99,8 @@ class _navbarState extends State<navbar> {
                 ),
                 GButton(
                   icon: LineIcons.bell,
-                  text: 'Notifications',
+                
+                  text: 'Updates',
                 ),
                 GButton(
                   icon: LineIcons.folder,

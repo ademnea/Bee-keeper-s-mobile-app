@@ -1,91 +1,20 @@
-import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:convert';
-import 'package:HPGM/navbar.dart';
-import 'package:HPGM/splashscreen.dart';
-import 'package:HPGM/Services/notifi_service.dart';
-import 'package:http/http.dart' as http;
+import 'package:HPGM/Services/auth_services.dart';
+import 'package:HPGM/components/custom_text_field.dart';
+import 'package:HPGM/forgot_password.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class login extends StatefulWidget {
-  const login({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<login> createState() => _loginState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-final TextEditingController usernamecontroller = TextEditingController();
-final TextEditingController passwordcontroller = TextEditingController();
-var mytoken = '';
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _isPasswordVisible = false; // New state variable
 
-Future<void> Logmein(BuildContext context) async {
-  print(
-      "Username: ${usernamecontroller.text}, Password: ${passwordcontroller.text}");
-  var headers = {'Accept': 'application/json'};
-  var request = http.MultipartRequest(
-      'POST', Uri.parse('https://www.ademnea.net/api/v1/login'));
-  request.fields.addAll(
-      {'email': usernamecontroller.text, 'password': passwordcontroller.text});
-  request.headers.addAll(headers);
-  http.StreamedResponse response = await request.send();
-
-  if (response.statusCode == 200) {
-    String responseBody = await response.stream.bytesToString();
-    Map<String, dynamic> responseData = jsonDecode(responseBody);
-    String token = responseData['token'];
-    saveToken(token);
-
-    // Print success message
-    // print(token);
-
-    Fluttertoast.showToast(
-        msg: "Successful!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0);
-
-    // Log the farmer in
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => navbar(
-          token: mytoken,
-        ),
-      ),
-    );
-  } else {
-    // Print "unauthorized"
-    // print("Wrong credentials!");
-    print(response.reasonPhrase);
-    Fluttertoast.showToast(
-        msg: "Wrong Credentials!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-}
-
-void saveToken(String token) {
-  // For simplicity, let's store it in a global variable
-  mytoken = token;
-}
-
-//functions to launch the external url.
-final Uri _url = Uri.parse('http://wa.me/+256755088321');
-
-Future<void> _launchUrl() async {
-  if (!await launchUrl(_url)) {
-    throw Exception('Could not launch $_url');
-  }
-}
-
-class _loginState extends State<login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,86 +25,43 @@ class _loginState extends State<login> {
               padding: const EdgeInsets.all(30),
               child: Column(
                 children: [
-                  Container(
-                    height: 100,
+                  Container(height: 100),
+                  Image.asset(
+                    'lib/images/log-1.png',
+                    height: 200,
+                    width: 200,
                   ),
-                  //image starts here
-                  Container(
-                    //color: Colors.white,
-                    child: Center(
-                      child: Image.asset(
-                        'lib/images/log-1.png',
-                        height: 200,
-                        width: 200,
+                  Container(height: 25),
+                  CustomTextField(
+                    controller: usernameController,
+                    labelText: 'Email',
+                    icon: Icons.person,
+                  ),
+                  Container(height: 20),
+                  CustomTextField(
+                    controller: passwordController,
+                    labelText: 'Password',
+                    icon: Icons.lock,
+                    obscureText: _isPasswordVisible, // Use state variable
+                    suffixIcon: IconButton( // Add visibility toggle
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
                     ),
                   ),
-                  Container(
-                    height: 25,
-                  ),
-
-                  TextFormField(
-                    controller: usernamecontroller,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      fillColor: Colors.brown.shade100, // Background color
-                      filled:
-                          true, // Set to true to fill the background with the specified color
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide:
-                            BorderSide.none, // No border for the outline
-                      ),
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(
-                            left: 16), // Add left padding to the prefix icon
-                        child: Icon(Icons.person), // Placeholder icon
-                      ),
-                    ),
-                    style: const TextStyle(
-                      height: 1.5,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20, // Increase the height of the text field
-                    ),
-                  ),
-                  Container(
-                    height: 20,
-                  ),
-
-                  TextFormField(
-                    controller: passwordcontroller,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      fillColor: Colors.brown.shade100, // Background color
-                      filled:
-                          true, // Set to true to fill the background with the specified color
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide:
-                            BorderSide.none, // No border for the outline
-                      ),
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(
-                            left: 16), // Add left padding to the prefix icon
-                        child: Icon(Icons.lock), // Placeholder icon
-                      ),
-                    ),
-                    style: const TextStyle(
-                      height: 1.5,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20, // Increase the height of the text field
-                    ),
-                  ),
-                  Container(
-                    height: 10,
-                  ),
-
+                  Container(height: 10),
                   Row(
                     children: [
-                      Spacer(),
+                      const Spacer(),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (c) => ForgotPassword()));
+                        },
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
@@ -185,22 +71,18 @@ class _loginState extends State<login> {
                       ),
                     ],
                   ),
-
-                  Container(
-                    height: 10,
-                  ),
+                  Container(height: 10),
                   SizedBox(
-                    width: 200, // Specify the desired width here
+                    width: 200,
                     child: ElevatedButton(
                       onPressed: () {
-                        Logmein(context);
+                        AuthService.logmein(context, usernameController.text, passwordController.text);
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromARGB(255, 206, 109, 40), // RGB color
+                          const Color.fromARGB(255, 206, 109, 40),
                         ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
@@ -221,25 +103,19 @@ class _loginState extends State<login> {
                       ),
                     ),
                   ),
-
-                  Container(
-                    height: 20,
-                  ),
-                  //bottom navigation.
+                  Container(height: 20),
                   Center(
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Have no account?"),
-                        const SizedBox(
-                            width: 1), // Add some space between the texts
+                        const SizedBox(width: 1),
                         TextButton(
-                          onPressed: _launchUrl,
+                          onPressed: AuthService.launchSupportUrl,
                           child: const Text(
                             "contact support team to register",
                             style: TextStyle(
-                              color: Colors
-                                  .blue, // Change color to blue for a link-like appearance
+                              color: Colors.blue,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -247,8 +123,6 @@ class _loginState extends State<login> {
                       ],
                     ),
                   ),
-
-                  //closes the column
                 ],
               ),
             ),

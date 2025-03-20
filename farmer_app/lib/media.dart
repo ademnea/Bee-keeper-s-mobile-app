@@ -91,7 +91,7 @@ class _MediaState extends State<Media> {
       };
       var response = await http.get(
         Uri.parse(
-            'https://www.ademnea.net/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate?page=$page'),
+            'http://196.43.168.57/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate?page=$page'),
         headers: headers,
       );
 
@@ -103,7 +103,7 @@ class _MediaState extends State<Media> {
         setState(() {
           photos.addAll(data.map<Map<String, String>>((item) => {
             'date': item['date'],
-            'path': 'https://www.ademnea.net/${item['path'].replaceAll('public/', '')}' // Remove 'public/' from path
+            'path': 'http://196.43.168.57/${item['path'].replaceAll('public/', '')}' // Remove 'public/' from path
           }).toList());
           _isFetching = false;
           _hasMore = hasMore;

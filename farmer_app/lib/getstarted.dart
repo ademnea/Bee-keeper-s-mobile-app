@@ -109,7 +109,7 @@ class _GetStartedState extends State<GetStarted> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => login()),
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
                     style: ButtonStyle(

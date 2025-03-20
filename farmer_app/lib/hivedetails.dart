@@ -55,7 +55,7 @@ class _HiveDetailsState extends State<HiveDetails> {
 
       var response = await http.get(
         Uri.parse(
-            'https://www.ademnea.net/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate'),
+            'http://196.43.168.57/api/v1/hives/$hiveId/images/$formattedStartDate/$formattedEndDate'),
         headers: headers,
       );
 
@@ -68,7 +68,7 @@ class _HiveDetailsState extends State<HiveDetails> {
         setState(() {
           photos = imagePaths
               .map<String>((item) =>
-                  'https://www.ademnea.net/${item['path'].replaceFirst("public/", "")}')
+                  'http://196.43.168.57/${item['path'].replaceFirst("public/", "")}')
               .toList();
         });
       } else {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:HPGM/getstarted.dart';
 import 'package:HPGM/login.dart';
+import 'package:HPGM/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,31 +16,38 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-
     Timer(const Duration(seconds: 3), () {
-      _checkFirstTime();
+      _checkSession();
     });
   }
 
-  Future<void> _checkFirstTime() async {
+  Future<void> _checkSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    String? token = prefs.getString('authToken');
 
     if (isFirstTime) {
-      // Show Get Started Screen
-      print('First time user, navigating to GetStarted');
-      await prefs.setBool('isFirstTime', false); // Set isFirstTime to false
+      // First-time user flow
+      await prefs.setBool('isFirstTime', false);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => GetStarted()),
       );
     } else {
-      // Skip to Home Screen
-      print('Not first time user, navigating to login');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => login()),
-      );
+      // Check session status
+      if (token != null && token.isNotEmpty) {
+        // Valid session exists
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => navbar(token: token)),
+        );
+      } else {
+        // No valid session
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      }
     }
   }
 
@@ -51,6 +59,7 @@ class _SplashscreenState extends State<Splashscreen> {
         child: Center(
           child: Image.asset(
             'lib/images/log-1.png',
+            height: 200, // Added explicit height
           ),
         ),
       ),

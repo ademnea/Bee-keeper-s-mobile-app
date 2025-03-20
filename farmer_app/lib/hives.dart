@@ -80,7 +80,7 @@ class _HivesState extends State<Hives> {
         'Authorization': sendToken,
       };
 
-      var url = 'https://www.ademnea.net/api/v1/farms/$farmId/hives';
+      var url = 'http://196.43.168.57/api/v1/farms/$farmId/hives';
       var response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {

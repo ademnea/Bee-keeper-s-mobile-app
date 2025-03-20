@@ -1,4 +1,5 @@
 import 'package:HPGM/components/imageslider.dart';
+import 'package:HPGM/records_form.dart';
 import 'package:HPGM/splashscreen.dart';
 import 'package:HPGM/components/notificationbar.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -84,7 +85,7 @@ class _RecordsState extends State<Records> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            // Button pressed action
+                            Navigator.push(context, MaterialPageRoute(builder: (c)=>RecordsForm()));
                           },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
@@ -111,7 +112,7 @@ class _RecordsState extends State<Records> {
                         ),
                         //end of textbutton
 
-                        const Text('Record New Harvest'),
+                        const Text('Record Inspection'),
                       ],
                     ),
                   ),
