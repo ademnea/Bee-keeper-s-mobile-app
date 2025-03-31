@@ -31,18 +31,13 @@ class _HiveDetailsState extends State<HiveDetails> {
   @override
   void initState() {
     super.initState();
-    // _endDate = DateTime.now();
-    // _startDate = _endDate.subtract(Duration(days: 6));
-    // fetchPhotos(widget.hiveId, _startDate, _endDate);
-
-    //hard coded for presentation purposes
+    // For presentation purposes
     DateTime startDate = DateTime(2024, 5, 21);
     DateTime endDate = DateTime(2024, 6, 5);
     fetchPhotos(widget.hiveId, startDate, endDate);
   }
 
-  Future<void> fetchPhotos(
-      int hiveId, DateTime startDate, DateTime endDate) async {
+  Future<void> fetchPhotos(int hiveId, DateTime startDate, DateTime endDate) async {
     try {
       String sendToken = "Bearer ${widget.token}";
       String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
@@ -82,240 +77,307 @@ class _HiveDetailsState extends State<HiveDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(0),
+      backgroundColor: Colors.grey[50],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header Section
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.amber[800]!,
+                    Colors.amber[600]!,
+                    Colors.amber[400]!,
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 50.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.chevron_left_rounded,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      'Hive ${widget.hiveId} Details',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      margin: const EdgeInsets.only(right: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Image Slider Section
+            if (photos.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: ImageSlider(
+                    imageUrls: photos,
+                  ),
+                ),
+              ),
+            
+            const SizedBox(height: 25),
+            
+            // Main Content Card
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 120,
-                    width: 2000,
-                    child: Stack(
+                  // Device Status Section
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.orange.withOpacity(0.8),
-                                Colors.orange.withOpacity(0.6),
-                                Colors.orange.withOpacity(0.4),
-                                Colors.orange.withOpacity(0.2),
-                                Colors.orange.withOpacity(0.1),
-                                Colors.transparent,
-                              ],
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.developer_board,
+                              color: Colors.amber[800],
+                              size: 28,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Device Status:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.green[100],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text(
+                                'Connected',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            
+                            
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TabView(
+                                  hiveId: widget.hiveId,
+                                  token: widget.token,
+                                ),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.amber[50],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 50.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                child: IconButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  icon: const Icon(
-                                    Icons.chevron_left_rounded,
-                                    color: Color.fromARGB(255, 206, 109, 40),
-                                    size: 65,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 90,
-                              ),
-                              Text(
-                                'Hive ${widget.hiveId}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "Sans",
-                                  fontSize: 20,
-                                ),
-                              ),
-                              const Spacer(),
-                              const Icon(
-                                Icons.person,
-                                color: Color.fromARGB(255, 206, 109, 40),
-                                size: 65,
-                              ),
-                            ],
+                          child: Text(
+                            'Monitor',
+                            style: TextStyle(
+                              color: Colors.amber[800],
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  if (photos.isNotEmpty)
-                    SizedBox(
-                      width: double.infinity,
-                      child: ImageSlider(
-                        imageUrls: photos,
-                      ),
-                    ),
-                  Center(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        color: Colors.brown[300],
-                        child: Column(
+                  
+                  const Divider(height: 1, thickness: 1, indent: 15, endIndent: 15),
+                  
+                  // Honey Level Section
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: Icon(
-                                    Icons.developer_board_outlined,
-                                    color: Colors.orange[700],
-                                  ),
-                                ),
-                                const Text(
-                                  'Device:',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontFamily: "Sans",
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                const Text(
-                                  'Connected',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    fontFamily: "Sans",
-                                  ),
-                                ),
-                                const Spacer(),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => TabView(
-                                          hiveId: widget.hiveId,
-                                          token: widget.token,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Check Monitor',
-                                    style: TextStyle(
-                                      color: Colors.blue[800],
-                                      decoration: TextDecoration.underline,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
-                                      fontFamily: "Sans",
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            Icon(
+                              Icons.hive,
+                              color: Colors.amber[800],
+                              size: 28,
                             ),
-                            Divider(
-                              height: 1,
-                              color: Colors.grey[350],
-                              thickness: 2,
-                            ),
-                            const SizedBox(height: 15),
-                            Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 10),
-                                ),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Honey Levels',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "Sans",
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Center(
-                              child: SizedBox(
-                                height: 250,
-                                width: 300,
-                                child: LiquidLinearProgressIndicator(
-                                  value: (widget.honeyLevel ?? 0) / 100,
-                                  valueColor: const AlwaysStoppedAnimation(
-                                      Colors.amber),
-                                  backgroundColor: Colors.amber[100]!,
-                                  borderColor:
-                                      const Color.fromARGB(255, 8, 7, 6),
-                                  borderWidth: 5.0,
-                                  borderRadius: 12.0,
-                                  direction: Axis.vertical,
-                                  center: TextButton(
-                                    onPressed: () {
-                                      // Define what happens when the button is pressed
-                                    },
-                                    child: Text(
-                                      "${widget.honeyLevel != null ? widget.honeyLevel!.toStringAsFixed(1) : '--'}%",
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.black,
-                                        fontFamily: "Sans",
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Honey Levels',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 10),
-                                ),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Hive Notifications',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "Sans",
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              child: const Column(
-                                children: [
-                                  NotificationComponent(
-                                    date: 'June 3, 2024',
-                                    title: 'Normal Condition',
-                                    content: 'All looks good with this hive.',
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Padding(
-                              padding:
-                                  EdgeInsets.only(left: 0, bottom: 22, top: 8),
                             ),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: 15),
+                        Center(
+                          child: Container(
+                            height: 250,
+                            width: 150,
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.amber[50],
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: LiquidLinearProgressIndicator(
+                              value: (widget.honeyLevel ?? 0) / 100,
+                              valueColor: AlwaysStoppedAnimation(Colors.amber[700]!),
+                              backgroundColor: Colors.amber[100]!,
+                              borderColor: Colors.amber[800]!,
+                              borderWidth: 3.0,
+                              borderRadius: 12.0,
+                              direction: Axis.vertical,
+                              center: Text(
+                                "${widget.honeyLevel != null ? widget.honeyLevel!.toStringAsFixed(1) : '--'}%",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Center(
+                          child: Text(
+                            widget.honeyLevel != null && widget.honeyLevel! > 75
+                                ? "Hive is almost full!"
+                                : widget.honeyLevel != null && widget.honeyLevel! > 50
+                                    ? "Good honey production"
+                                    : widget.honeyLevel != null && widget.honeyLevel! > 25
+                                        ? "Moderate honey levels"
+                                        : "Low honey levels",
+                            style: TextStyle(
+                              color: Colors.amber[800],
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Container(height: 20),
+                  
+                  const Divider(height: 1, thickness: 1, indent: 15, endIndent: 15),
+                  
+                  // Notifications Section
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.notifications,
+                              color: Colors.amber[800],
+                              size: 28,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Hive Notifications',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                        const NotificationComponent(
+                          date: 'June 3, 2024',
+                          title: 'Normal Condition',
+                          content: 'All looks good with this hive.',
+                        ),
+                        const SizedBox(height: 10),
+                        const NotificationComponent(
+                          date: 'May 28, 2024',
+                          title: 'Temperature Alert',
+                          content: 'High temperature detected in the hive.',
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
+            
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );

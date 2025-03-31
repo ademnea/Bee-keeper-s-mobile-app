@@ -41,6 +41,7 @@ dependencies:
   flutter_echarts: ^2.5.0
   video_thumbnail: ^0.5.3
   carousel_slider: ^5.0.0
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
