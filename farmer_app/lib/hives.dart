@@ -9,17 +9,17 @@ import 'package:HPGM/components/pop_up.dart';
 import 'dart:convert';
 
 class Hives extends StatefulWidget {
-   final int farmId;
+  final int farmId;
   final String token;
   final String apiaryLocation;
   final String farmName;
 
-   const Hives({
-    Key? key, 
-    required this.farmId, 
+  const Hives({
+    Key? key,
+    required this.farmId,
     required this.token,
-    required this.apiaryLocation, // Add this
-    required this.farmName, // Add this
+    required this.apiaryLocation,
+    required this.farmName,
   }) : super(key: key);
 
   @override
@@ -93,20 +93,13 @@ class _HivesState extends State<Hives> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
-
-        // print(data);
-
         setState(() {
           hives = data.map((hive) => Hive.fromJson(hive)).toList();
-
-          //print(hives);
         });
       } else {
-        // Show an error message or handle the error appropriately
         print('Failed to load hive data: ${response.statusCode}');
       }
     } catch (error) {
-      // Handle network errors or other exceptions
       print('Error fetching hives: $error');
     }
   }
@@ -114,6 +107,7 @@ class _HivesState extends State<Hives> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.brown[100],
       body: LiquidPullToRefresh(
         color: Colors.orange,
         height: 150,
@@ -121,306 +115,345 @@ class _HivesState extends State<Hives> {
         onRefresh: () async {
           await getHives(widget.farmId);
         },
-        child: Container(
-          child: ListView(
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 130,
-                        width: 2000,
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.orange.withOpacity(0.8),
-                                    Colors.orange.withOpacity(0.6),
-                                    Colors.orange.withOpacity(0.4),
-                                    Colors.orange.withOpacity(0.2),
-                                    Colors.orange.withOpacity(0.1),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    child: IconButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      icon: const Icon(
-                                        Icons.chevron_left_rounded,
-                                        color:
-                                            Color.fromARGB(255, 206, 109, 40),
-                                        size: 65,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Text(
-                                    'Prototype Apiary Hives',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: "Sans",
-                                        fontSize: 20),
-                                  ),
-                                  const Spacer(),
-                                  const Icon(
-                                    Icons.person,
-                                    color: Color.fromARGB(255, 206, 109, 40),
-                                    size: 65,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // ListView.builder to dynamically create cards
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 50),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: hives.length,
-                          itemBuilder: (context, index) {
-                            return buildHiveCard(hives[index]);
-                          },
-                        ),
-                      ),
-                    ],
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 120,
+              backgroundColor: Colors.orange,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  '${widget.farmName} Hives',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Sans",
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                centerTitle: true,
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.orange.withOpacity(0.8),
+                        Colors.orange.withOpacity(0.6),
+                        Colors.orange.withOpacity(0.4),
+                        Colors.orange.withOpacity(0.2),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.chevron_left_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: buildHiveCard(hives[index]),
+                  );
+                },
+                childCount: hives.length,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget buildHiveCard(Hive hive) {
-    return Center(
-      child: SizedBox(
-        width: 350,
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.brown[300],
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 5),
-                child: Row(
-                  children: [
-                    Icon(Icons.hexagon, color: Colors.orange[700]),
-                    const Text(
-                      'Hive Name: ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: "Sans",
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
+      color: Colors.brown[300],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row
+            Row(
+              children: [
+                Icon(
+                  Icons.hexagon,
+                  color: Colors.orange[700],
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Hive ${hive.id}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Sans",
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Icon(
+                  hive.isConnected ? Icons.link : Icons.link_off,
+                  color: hive.isConnected ? Colors.green : Colors.red,
+                  size: 24,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Status Indicators
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatusIndicator(
+                    icon: Icons.thermostat,
+                    label: 'Temperature',
+                    value: hive.temperature ?? 0,
+                    maxValue: 50,
+                    unit: '°C',
+                    onTap: () => showModalBottomSheet(
+                      context: context,
+                      builder: (context) => buildTempSheet(
+                        "Temperature Details",
+                        hive.temperature ?? 0,
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Hive ${hive.id}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 17,
-                        fontFamily: "Sans",
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildStatusIndicator(
+                    icon: Icons.scale,
+                    label: 'Honey Level',
+                    value: hive.honeyLevel ?? 0,
+                    maxValue: 100,
+                    unit: '%',
+                    onTap: () => showModalBottomSheet(
+                      context: context,
+                      builder: (context) => buildHoneySheet(
+                        "Honey Levels",
+                        hive.honeyLevel ?? 0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Colonization Status
+            _buildInfoRow(
+              icon: Icons.grass,
+              label: 'Colonization Status',
+              value: hive.isColonized ? 'Colonized' : 'Not Colonized',
+              valueColor: hive.isColonized ? Colors.green : Colors.red,
+            ),
+            const SizedBox(height: 20),
+
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange[700],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HiveDetails(
+                            hiveId: hive.id,
+                            token: widget.token,
+                            honeyLevel: hive.honeyLevel,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'View Details',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HiveDetails(
-                              hiveId: hive.id,
-                              token: widget.token,
-                              honeyLevel: hive.honeyLevel,
-                            ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown[600],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecordsForm(
+                            apiaryLocation: widget.apiaryLocation,
+                            hiveId: 'Hive ${hive.id}',
+                            farmName: widget.farmName,
                           ),
-                        );
-                      },
-                      child: const Text(
-                        'Hive Data',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // ... (other existing rows remain the same)
-              Padding(
-                padding: const EdgeInsets.only(left: 22, bottom: 10),
-                child: Row(
-                  children: [
-                    Icon(Icons.developer_board_rounded,
-                        color: Colors.orange[700]),
-                    const Text(
-                      'Device:',
+                      );
+                    },
+                    child: const Text(
+                      'Inspect',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        fontFamily: "Sans",
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      hive.isConnected ? 'Connected' : 'Disconnected',
-                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: hive.isConnected ? Colors.white : Colors.red,
-                        fontSize: 16,
-                        fontFamily: "Sans",
+                        color: Colors.white,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  builder: (context) => buildTempSheet(
-                    "Temperature Details",
-                    hive.temperature ?? 0,
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 10),
-                  child: Row(
-                    children: [
-                      Icon(Icons.thermostat, color: Colors.orange[700]),
-                      const Text(
-                        'Temperature:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      CustomProgressBar(
-                        value: hive.temperature ?? 0,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  builder: (context) => buildHoneySheet(
-                    "Honey Levels",
-                    hive.honeyLevel ?? 0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 22, bottom: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.scale_rounded, color: Colors.orange[700]),
-                      const Text(
-                        'Honey Levels:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          fontFamily: "Sans",
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        height: 12,
-                        width: 100,
-                        child: LiquidLinearProgressIndicator(
-                          value: (hive.honeyLevel ?? 0) / 100,
-                          valueColor:
-                              const AlwaysStoppedAnimation(Colors.amber),
-                          backgroundColor: Colors.amber[100]!,
-                          borderColor: Colors.brown,
-                          borderWidth: 1.0,
-                          borderRadius: 12.0,
-                          direction: Axis.horizontal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  hive.isColonized ? 'Colonized' : 'Not Colonized',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: "Sans",
-                  ),
-                ),
-              ),
-              // Add the new "Inspect Hive" button here
-              Padding(
-                padding: const EdgeInsets.only(bottom: 15),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange[700],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  onPressed: () {
-                  
-                   
-  Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RecordsForm(
-          apiaryLocation: widget.apiaryLocation, // From Hives widget
-          hiveId: 'Hive ${hive.id}', // From current hive
-          farmName: widget.farmName// From Hives widget
+              ],
+            ),
+          ],
         ),
       ),
     );
- 
-                  },
-                  child: const Text(
-                    'Inspect Hive',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+  }
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    Color? valueColor,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          color: Colors.orange[700],
+          size: 20,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Sans",
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: valueColor ?? Colors.white,
+                  fontFamily: "Sans",
                 ),
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusIndicator({
+    required IconData icon,
+    required String label,
+    required double value,
+    required double maxValue,
+    required String unit,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.brown[400]?.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.brown[500]!),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: Colors.orange[700],
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                    fontFamily: "Sans",
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${value.toStringAsFixed(1)}$unit',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: "Sans",
+                  ),
+                ),
+                SizedBox(
+                  width: 50,
+                  height: 12,
+                  child: LiquidLinearProgressIndicator(
+                    value: value / maxValue,
+                    valueColor: AlwaysStoppedAnimation(
+                      label == 'Honey Level' ? Colors.amber : Colors.orange,
+                    ),
+                    backgroundColor: Colors.amber[100]!,
+                    borderColor: Colors.transparent,
+                    borderWidth: 0,
+                    borderRadius: 6,
+                    direction: Axis.horizontal,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
