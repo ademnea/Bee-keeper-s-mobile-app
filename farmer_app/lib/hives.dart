@@ -1,3 +1,4 @@
+import 'package:HPGM/records_form.dart';
 import 'package:flutter/material.dart';
 import 'package:HPGM/hivedetails.dart';
 import 'package:http/http.dart' as http;
@@ -8,11 +9,18 @@ import 'package:HPGM/components/pop_up.dart';
 import 'dart:convert';
 
 class Hives extends StatefulWidget {
-  final int farmId;
+   final int farmId;
   final String token;
+  final String apiaryLocation;
+  final String farmName;
 
-  const Hives({Key? key, required this.farmId, required this.token})
-      : super(key: key);
+   const Hives({
+    Key? key, 
+    required this.farmId, 
+    required this.token,
+    required this.apiaryLocation, // Add this
+    required this.farmName, // Add this
+  }) : super(key: key);
 
   @override
   State<Hives> createState() => _HivesState();
@@ -217,17 +225,12 @@ class _HivesState extends State<Hives> {
           color: Colors.brown[300],
           child: Column(
             children: [
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(left: 22, bottom: 5),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.hexagon,
-                      color: Colors.orange[700],
-                    ),
+                    Icon(Icons.hexagon, color: Colors.orange[700]),
                     const Text(
                       'Hive Name: ',
                       style: TextStyle(
@@ -236,9 +239,7 @@ class _HivesState extends State<Hives> {
                         fontFamily: "Sans",
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     Text(
                       'Hive ${hive.id}',
                       style: const TextStyle(
@@ -248,42 +249,40 @@ class _HivesState extends State<Hives> {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(
-                      width: 40,
-                    ),
+                    const Spacer(),
                     TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HiveDetails(
-                                hiveId: hive.id,
-                                token: widget.token,
-                                honeyLevel: hive.honeyLevel,
-                              ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HiveDetails(
+                              hiveId: hive.id,
+                              token: widget.token,
+                              honeyLevel: hive.honeyLevel,
                             ),
-                          );
-                        },
-                        child: const Text(
-                          'Hive Data',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: "Sans",
-                            fontWeight: FontWeight.bold,
                           ),
-                        ))
+                        );
+                      },
+                      child: const Text(
+                        'Hive Data',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "Sans",
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
+              // ... (other existing rows remain the same)
               Padding(
                 padding: const EdgeInsets.only(left: 22, bottom: 10),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.developer_board_rounded,
-                      color: Colors.orange[700],
-                    ),
+                    Icon(Icons.developer_board_rounded,
+                        color: Colors.orange[700]),
                     const Text(
                       'Device:',
                       style: TextStyle(
@@ -292,9 +291,7 @@ class _HivesState extends State<Hives> {
                         fontFamily: "Sans",
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     Text(
                       hive.isConnected ? 'Connected' : 'Disconnected',
                       style: TextStyle(
@@ -319,10 +316,7 @@ class _HivesState extends State<Hives> {
                   padding: const EdgeInsets.only(left: 22, bottom: 10),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.thermostat,
-                        color: Colors.orange[700],
-                      ),
+                      Icon(Icons.thermostat, color: Colors.orange[700]),
                       const Text(
                         'Temperature:',
                         style: TextStyle(
@@ -331,11 +325,7 @@ class _HivesState extends State<Hives> {
                           fontFamily: "Sans",
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-
-                      //temp levels indicator
+                      const SizedBox(width: 10),
                       CustomProgressBar(
                         value: hive.temperature ?? 0,
                       ),
@@ -355,10 +345,7 @@ class _HivesState extends State<Hives> {
                   padding: const EdgeInsets.only(left: 22, bottom: 8),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.scale_rounded,
-                        color: Colors.orange[700],
-                      ),
+                      Icon(Icons.scale_rounded, color: Colors.orange[700]),
                       const Text(
                         'Honey Levels:',
                         style: TextStyle(
@@ -367,9 +354,7 @@ class _HivesState extends State<Hives> {
                           fontFamily: "Sans",
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+                      const SizedBox(width: 10),
                       SizedBox(
                         height: 12,
                         width: 100,
@@ -397,6 +382,40 @@ class _HivesState extends State<Hives> {
                     color: Colors.white,
                     fontSize: 16,
                     fontFamily: "Sans",
+                  ),
+                ),
+              ),
+              // Add the new "Inspect Hive" button here
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange[700],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  onPressed: () {
+                  
+                   
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecordsForm(
+          apiaryLocation: widget.apiaryLocation, // From Hives widget
+          hiveId: 'Hive ${hive.id}', // From current hive
+          farmName: widget.farmName// From Hives widget
+        ),
+      ),
+    );
+ 
+                  },
+                  child: const Text(
+                    'Inspect Hive',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

@@ -3,7 +3,7 @@ import 'package:HPGM/components/pop_up.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 import 'farm_model.dart';
-import 'hives.dart'; // Assuming Hives is in a separate file
+import 'hives.dart';
 
 Widget buildFarmCard(Farm farm, BuildContext context, String token) {
   return Center(
@@ -17,9 +17,7 @@ Widget buildFarmCard(Farm farm, BuildContext context, String token) {
         color: Colors.brown[300],
         child: Column(
           children: [
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Table(
               children: [
                 TableRow(
@@ -76,8 +74,12 @@ Widget buildFarmCard(Farm farm, BuildContext context, String token) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    Hives(farmId: farm.id, token: token),
+                                builder: (context) => Hives(
+                                  farmId: farm.id,
+                                  token: token,
+                                  apiaryLocation: '${farm.district}, ${farm.address}',
+                                  farmName: farm.name,
+                                ),
                               ),
                             );
                           },
@@ -113,9 +115,7 @@ Widget buildFarmCard(Farm farm, BuildContext context, String token) {
                       fontFamily: "Sans",
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   Text(
                     '${farm.district}, ${farm.address}',
                     style: const TextStyle(
@@ -152,9 +152,7 @@ Widget buildFarmCard(Farm farm, BuildContext context, String token) {
                         fontFamily: "Sans",
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     CustomProgressBar(
                       value: farm.average_temperature ?? 0,
                     ),
@@ -186,9 +184,7 @@ Widget buildFarmCard(Farm farm, BuildContext context, String token) {
                         fontFamily: "Sans",
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     SizedBox(
                       height: 12,
                       width: 100,

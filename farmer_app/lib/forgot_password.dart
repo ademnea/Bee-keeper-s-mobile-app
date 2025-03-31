@@ -4,8 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
-
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 
@@ -21,27 +19,52 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+        ),
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.all(30),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(height: 100),
+                  const SizedBox(height: 40),
                   Image.asset(
                     'lib/images/log-1.png',
-                    height: 200,
-                    width: 200,
+                    height: 180,
+                    width: 180,
+                    fit: BoxFit.contain,
                   ),
-                  Container(height: 25),
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Forgot Password',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    'Enter your email to receive a reset link',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
                   CustomTextField(
                     controller: emailController,
-                    labelText: 'Email',
+                  hintText: 'Email',
                     icon: Icons.email,
+                    // contentPadding: const EdgeInsets.symmetric(
+                    //   vertical: 16, 
+                    //   horizontal: 20,
+                    // ),
                   ),
-                  Container(height: 20),
+                  const SizedBox(height: 30),
                   SizedBox(
-                    width: 200,
+                    width: double.infinity,
+                    height: 50,
                     child: ElevatedButton(
                       onPressed: _isSubmitting
                           ? null
@@ -50,46 +73,40 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               await _handlePasswordReset();
                               setState(() => _isSubmitting = false);
                             },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromARGB(255, 206, 109, 40),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 206, 109, 40),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
+                        elevation: 2,
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        child: Text(
-                          _isSubmitting ? 'Processing...' : 'Reset Password',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
+                      child: Text(
+                        _isSubmitting ? 'PROCESSING...' : 'RESET PASSWORD',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
-                  Container(height: 20),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Remember your password?"),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            "Back to Login",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Remember your password?"),
+                      const SizedBox(width: 5),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          "Back to Login",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -116,7 +133,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://196.43.168.57/api/v1/forgot-password'), // Modified API endpoint
+        Uri.parse('http://196.43.168.57/api/v1/forgot-password'),
         headers: {'Accept': 'application/json'},
         body: {'email': email},
       );
